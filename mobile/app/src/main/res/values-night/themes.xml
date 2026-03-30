@@ -1,0 +1,7 @@
+<resources>
+    <style name="Theme.TravelLite" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">#EF7722</item>
+        <item name="colorPrimaryDark">#1F2937</item>
+        <item name="colorAccent">#EF7722</item>
+    </style>
+</resources>
