@@ -31,9 +31,7 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9d7f932a-844f-4696-bbc2-52426c30ca25" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../web/src/pages/Dashboard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../web/src/pages/Dashboard.tsx" afterDir="false" />
-    </list>
+    <list default="true" id="9d7f932a-844f-4696-bbc2-52426c30ca25" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -81,7 +79,7 @@
     "RunOnceActivity.readMode.enableVisualFormatting": "true",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
-    "git-widget-placeholder": "feature/web-trip-management",
+    "git-widget-placeholder": "feature/design-patterns-refactor",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/rel/Documents/IT342-Amad-TravelLite/mobile"
   }

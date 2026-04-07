@@ -1,8 +1,10 @@
 package edu.cit.amad.travellite.controller;
 
+import edu.cit.amad.travellite.adapter.WeatherAdapter;
 import edu.cit.amad.travellite.dto.DashboardResponse;
 import edu.cit.amad.travellite.dto.TripRequest;
 import edu.cit.amad.travellite.dto.TripResponse;
+import edu.cit.amad.travellite.dto.WeatherResponse;
 import edu.cit.amad.travellite.entity.User;
 import edu.cit.amad.travellite.service.TripService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,7 @@ public class TripController {
 
     @Autowired private TripService tripService;
     @Autowired private UserRepository userRepository;
+    @Autowired private WeatherAdapter weatherAdapter;
 
     private Long getUserId(UserDetails userDetails) {
         User user = userRepository.findByEmail(userDetails.getUsername())
@@ -111,6 +114,19 @@ public class TripController {
         response.put("success", true);
         response.put("data", null);
         response.put("error", null);
+        response.put("timestamp", java.time.LocalDateTime.now().toString());
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/trips/{id}/weather")
+    public ResponseEntity<?> getWeather(@PathVariable Integer id) {
+        TripResponse trip = tripService.getTripById(id);
+        WeatherResponse weather = weatherAdapter.getWeather(trip.getDestination());
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", weather != null);
+        response.put("data", weather);
+        response.put("error", weather == null
+                ? Map.of("message", "Weather information unavailable") : null);
         response.put("timestamp", java.time.LocalDateTime.now().toString());
         return ResponseEntity.ok(response);
     }
