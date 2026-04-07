@@ -1,4 +1,5 @@
 package edu.cit.amad.travellite.security;
+
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,11 +11,24 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
+    private static JwtUtil instance;
+
     @Value("${jwt.secret}")
     private String secret;
 
     @Value("${jwt.expiration}")
     private long expiration;
+
+    public JwtUtil() {
+        instance = this;
+    }
+
+    public static JwtUtil getInstance() {
+        if (instance == null) {
+            throw new IllegalStateException("JwtUtil not initialized by Spring yet.");
+        }
+        return instance;
+    }
 
     private Key getSigningKey() {
         byte[] keyBytes = secret.getBytes();
