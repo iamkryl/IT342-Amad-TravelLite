@@ -124,7 +124,10 @@ export default function Login() {
           <hr className="flex-grow border-gray-600" />
         </div>
 
-        <button className="w-full bg-[#374151] text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-600 transition">
+        <button
+          onClick={() => window.location.href = 'http://localhost:8080/oauth2/authorization/google'}
+          className="w-full bg-[#374151] text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-600 transition"
+        >
           <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="w-5 h-5" />
           Continue with Google
         </button>
