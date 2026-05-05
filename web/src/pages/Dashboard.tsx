@@ -54,7 +54,7 @@ export default function Dashboard() {
       console.error('Failed to fetch profile', err);
     }
   };
-  
+
   const fetchDashboard = async () => {
     try {
       const res = await axios.get('http://localhost:8080/api/v1/dashboard', {
@@ -116,7 +116,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F0F2F5]">
+    <div className="min-h-screen" style={{ background: 'linear-gradient(145deg, #eef0f4 0%, #e4e8ee 50%, #dde3eb 100%)' }}>
 
       {/* Navbar */}
       <div className="bg-[#1F2937] px-8 py-3 flex justify-between items-center shadow-lg sticky top-0 z-40">
@@ -150,95 +150,114 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="px-8 py-10 max-w-7xl mx-auto">
+      <div className="px-8 py-10 max-w-[1400px] mx-auto">
 
         {/* Header */}
         <div className="flex justify-between items-start mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-[#111827] mb-1 tracking-tight">
+            <h1 className="text-3xl font-black text-[#111827] mb-1 tracking-tight">
               Welcome back, {user.first_name}! 👋
             </h1>
-            <p className="text-gray-500">Manage your upcoming trips and track your travel budget</p>
+            <p className="text-gray-500 text-sm">Manage your upcoming trips and track your travel budget</p>
           </div>
           <button
             onClick={() => setShowPlanModal(true)}
-            className="bg-gradient-to-r from-[#EF7722] to-[#f59340] text-white px-6 py-3 rounded-xl font-semibold shadow-lg shadow-orange-200 hover:shadow-orange-300 hover:from-[#e06b18] hover:to-[#EF7722] transition-all duration-200 text-sm flex items-center gap-2"
+            className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm text-white shadow-lg shadow-orange-200 hover:shadow-orange-300 transition-all duration-200"
+            style={{ background: 'linear-gradient(135deg, #EF7722 0%, #f59340 100%)' }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'linear-gradient(135deg, #e06b18 0%, #EF7722 100%)')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'linear-gradient(135deg, #EF7722 0%, #f59340 100%)')}
           >
             <span className="text-lg leading-none">+</span> Plan New Trip
           </button>
         </div>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
 
           {/* Total Trips */}
-          <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-100 flex justify-between items-center hover:shadow-lg transition-shadow duration-200">
-            <div>
-              <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-2">Total Trips</p>
-              <p className="text-4xl font-bold text-[#111827]">{dashboard.totalTrips}</p>
-              <p className="text-gray-400 text-sm mt-1">Across all destinations</p>
-            </div>
-            <div className="bg-gradient-to-br from-[#1F2937] to-[#374151] rounded-2xl p-3.5 shadow-md">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-              </svg>
+          <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/60 border border-gray-100/80 overflow-hidden hover:shadow-2xl hover:shadow-gray-200/80 transition-shadow duration-300">
+            <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, #1F2937 0%, #374151 100%)' }} />
+            <div className="p-6 flex justify-between items-center">
+              <div>
+                <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-2">Total Trips</p>
+                <p className="text-4xl font-black text-[#111827]">{dashboard.totalTrips}</p>
+                <p className="text-gray-400 text-sm mt-1">Across all destinations</p>
+              </div>
+              <div className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg" style={{ background: 'linear-gradient(135deg, #1F2937 0%, #374151 100%)' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                </svg>
+              </div>
             </div>
           </div>
 
           {/* Overall Expense */}
-          <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-100 flex justify-between items-center hover:shadow-lg transition-shadow duration-200">
-            <div>
-              <p className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-2">Overall Expense</p>
-              <p className="text-4xl font-bold text-[#111827]">₱{dashboard.overallExpense.toLocaleString()}</p>
-              <p className="text-gray-400 text-sm mt-1">Total budget spent</p>
-            </div>
-            <div className="bg-gradient-to-br from-[#0BA6DF] to-[#0891c2] rounded-2xl p-3.5 shadow-md">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+          <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/60 border border-gray-100/80 overflow-hidden hover:shadow-2xl hover:shadow-gray-200/80 transition-shadow duration-300">
+            <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, #0BA6DF 0%, #0891c2 100%)' }} />
+            <div className="p-6 flex justify-between items-center">
+              <div>
+                <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mb-2">Overall Expense</p>
+                <p className="text-4xl font-black text-[#111827]">₱{dashboard.overallExpense.toLocaleString()}</p>
+                <p className="text-gray-400 text-sm mt-1">Total budget spent</p>
+              </div>
+              <div className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-100" style={{ background: 'linear-gradient(135deg, #0BA6DF 0%, #0891c2 100%)' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
             </div>
           </div>
 
-          {/* Upcoming Travels — clickable */}
+          {/* Upcoming Travels */}
           <div
             onClick={() => { setShowUpcomingModal(true); fetchUpcomingTrips(); }}
-            className="bg-gradient-to-br from-[#EFF6FF] to-[#DBEAFE] rounded-2xl p-6 shadow-md border border-blue-100 flex justify-between items-center hover:shadow-lg transition-shadow duration-200 cursor-pointer"
+            className="rounded-2xl shadow-xl shadow-blue-100/60 border border-blue-100/80 overflow-hidden hover:shadow-2xl hover:shadow-blue-200/80 transition-all duration-300 cursor-pointer"
+            style={{ background: 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)' }}
           >
-            <div>
-              <p className="text-blue-400 text-xs font-semibold uppercase tracking-wider mb-2">Upcoming Travels</p>
-              <p className="text-4xl font-bold text-[#111827]">{dashboard.upcomingTravelsCount}</p>
-              <p className="text-blue-400 text-sm mt-1">Trips coming up</p>
-            </div>
-            <div className="bg-gradient-to-br from-[#0BA6DF] to-[#0891c2] rounded-2xl p-3.5 shadow-md">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
+            <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, #0BA6DF 0%, #0891c2 100%)' }} />
+            <div className="p-6 flex justify-between items-center">
+              <div>
+                <p className="text-blue-400 text-xs font-bold uppercase tracking-widest mb-2">Upcoming Travels</p>
+                <p className="text-4xl font-black text-[#111827]">{dashboard.upcomingTravelsCount}</p>
+                <p className="text-blue-400 text-sm mt-1">Trips coming up</p>
+              </div>
+              <div className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-200" style={{ background: 'linear-gradient(135deg, #0BA6DF 0%, #0891c2 100%)' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Recent Trips Table */}
-        <div>
-          <div className="flex items-center gap-3 mb-4">
-            <h2 className="text-xl font-bold text-[#111827] tracking-tight">Your Recent Trips</h2>
-            <span className="bg-orange-100 text-[#EF7722] text-xs font-bold px-2.5 py-1 rounded-full">
+        {/* Recent Trips */}
+        <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/60 border border-gray-100/80 overflow-hidden">
+          <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, #EF7722 0%, #f59340 60%, #0BA6DF 100%)' }} />
+          <div className="px-6 py-5 flex items-center gap-3" style={{ borderBottom: '1px solid #f3f4f6' }}>
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'rgba(239,119,34,0.1)' }}>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-[#EF7722]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+              </svg>
+            </div>
+            <h2 className="text-base font-black text-[#111827] tracking-tight">Your Recent Trips</h2>
+            <span className="bg-orange-50 text-[#EF7722] text-xs font-bold px-2.5 py-1 rounded-lg border border-orange-100">
               {trips.length} trips
             </span>
           </div>
 
           {loading ? (
-            <div className="bg-white rounded-2xl p-10 text-center shadow-md border border-gray-100">
-              <div className="flex items-center justify-center gap-2">
+            <div className="p-10 text-center">
+              <div className="flex items-center justify-center gap-2 mb-3">
                 <div className="w-2 h-2 bg-[#EF7722] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
                 <div className="w-2 h-2 bg-[#EF7722] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
                 <div className="w-2 h-2 bg-[#EF7722] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
               </div>
-              <p className="text-gray-400 text-sm mt-3">Loading your trips...</p>
+              <p className="text-gray-400 text-sm">Loading your trips...</p>
             </div>
           ) : trips.length === 0 ? (
-            <div className="bg-white rounded-2xl p-12 text-center shadow-md border border-gray-100">
-              <div className="w-16 h-16 bg-orange-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-[#EF7722]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="p-12 text-center">
+              <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ background: 'rgba(239,119,34,0.08)' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-orange-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                 </svg>
               </div>
@@ -246,55 +265,53 @@ export default function Dashboard() {
               <p className="text-gray-400 text-sm">Start planning your first adventure!</p>
             </div>
           ) : (
-            <div className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="bg-gradient-to-r from-[#1F2937] to-[#374151] text-white">
-                    <th className="px-6 py-4 text-left font-semibold text-xs uppercase tracking-wider">Date</th>
-                    <th className="px-6 py-4 text-left font-semibold text-xs uppercase tracking-wider">Trip Title</th>
-                    <th className="px-6 py-4 text-left font-semibold text-xs uppercase tracking-wider">Budget</th>
-                    <th className="px-6 py-4 text-left font-semibold text-xs uppercase tracking-wider">From</th>
-                    <th className="px-6 py-4 text-left font-semibold text-xs uppercase tracking-wider">Destination</th>
-                    <th className="px-6 py-4 text-left font-semibold text-xs uppercase tracking-wider">Duration</th>
+            <table className="w-full text-sm">
+              <thead>
+                <tr style={{ background: 'linear-gradient(90deg, #1F2937 0%, #374151 100%)' }}>
+                  <th className="px-6 py-4 text-left font-bold text-xs uppercase tracking-widest text-gray-300">Date</th>
+                  <th className="px-6 py-4 text-left font-bold text-xs uppercase tracking-widest text-gray-300">Trip Title</th>
+                  <th className="px-6 py-4 text-left font-bold text-xs uppercase tracking-widest text-gray-300">Budget</th>
+                  <th className="px-6 py-4 text-left font-bold text-xs uppercase tracking-widest text-gray-300">From</th>
+                  <th className="px-6 py-4 text-left font-bold text-xs uppercase tracking-widest text-gray-300">Destination</th>
+                  <th className="px-6 py-4 text-left font-bold text-xs uppercase tracking-widest text-gray-300">Duration</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {trips.map((trip, index) => (
+                  <tr
+                    key={trip.tripId}
+                    onClick={() => navigate(`/trips/${trip.tripId}`)}
+                    className={`cursor-pointer hover:bg-orange-50 transition-all duration-150 group ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'}`}
+                  >
+                    <td className="px-6 py-4 text-gray-400 text-sm">{formatDate(trip.startDate, trip.endDate)}</td>
+                    <td className="px-6 py-4">
+                      <span className="font-bold text-[#111827] group-hover:text-[#EF7722] transition-colors">
+                        {trip.title}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="font-bold px-3 py-1.5 rounded-lg text-xs border border-orange-100 text-[#EF7722]" style={{ background: 'rgba(239,119,34,0.08)' }}>
+                        ₱{Number(trip.totalExpenses).toLocaleString()}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-gray-500 text-sm">{trip.origin}</td>
+                    <td className="px-6 py-4">
+                      <span className="font-bold px-3 py-1.5 rounded-lg text-xs border border-blue-100 text-[#0BA6DF]" style={{ background: 'rgba(11,166,223,0.08)' }}>
+                        {trip.destination}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="text-gray-500 flex items-center gap-1.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        {trip.duration} days
+                      </span>
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-50">
-                  {trips.map((trip, index) => (
-                    <tr
-                      key={trip.tripId}
-                      onClick={() => navigate(`/trips/${trip.tripId}`)}
-                      className={`cursor-pointer hover:bg-orange-50 transition-all duration-150 group ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}`}
-                    >
-                      <td className="px-6 py-4 text-gray-500 text-sm">{formatDate(trip.startDate, trip.endDate)}</td>
-                      <td className="px-6 py-4">
-                        <span className="font-semibold text-[#111827] group-hover:text-[#EF7722] transition-colors">
-                          {trip.title}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="bg-orange-50 text-[#EF7722] font-bold px-3 py-1.5 rounded-lg text-xs border border-orange-100">
-                          ₱{Number(trip.totalExpenses).toLocaleString()}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-gray-500">{trip.origin}</td>
-                      <td className="px-6 py-4">
-                        <span className="bg-blue-50 text-[#0BA6DF] font-bold px-3 py-1.5 rounded-lg text-xs border border-blue-100">
-                          {trip.destination}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="text-gray-500 flex items-center gap-1">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                          {trip.duration} days
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                ))}
+              </tbody>
+            </table>
           )}
         </div>
       </div>
@@ -302,11 +319,7 @@ export default function Dashboard() {
       {showPlanModal && (
         <PlanTripModal
           onClose={() => setShowPlanModal(false)}
-          onSuccess={() => {
-            setShowPlanModal(false);
-            fetchDashboard();
-            fetchTrips();
-          }}
+          onSuccess={() => { setShowPlanModal(false); fetchDashboard(); fetchTrips(); }}
           token={token || ''}
         />
       )}
