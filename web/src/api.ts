@@ -22,4 +22,20 @@ export const loginUser = (data: {
   password: string;
 }) => API.post('/auth/login', data);
 
+export const getProfile = () => API.get('/users/me');
+
+export const updateProfile = (data: {
+  firstName?: string;
+  lastName?: string;
+  password?: string;
+}) => API.put('/users/me', data);
+
+export const uploadPhoto = (file: File) => {
+  const formData = new FormData();
+  formData.append('photo', file);
+  return API.post('/users/me/photo', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  });
+};
+
 export default API;

@@ -11,15 +11,16 @@ import java.util.Map;
 @Component
 public class WeatherAdapter {
 
-    @Value("${weather.api.key:demo}")
+    @Value("${openweathermap.api.key}")
     private String apiKey;
 
     private final RestTemplate restTemplate = new RestTemplate();
 
     public WeatherResponse getWeather(String destination) {
         try {
+            String cleanDestination = destination.split(",")[0].trim();
             String url = "https://api.openweathermap.org/data/2.5/weather?q="
-                    + destination
+                    + cleanDestination
                     + "&appid=" + apiKey
                     + "&units=metric";
 

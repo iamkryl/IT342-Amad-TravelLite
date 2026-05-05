@@ -5,6 +5,7 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import TripDetail from './pages/TripDetail';
 import OAuth2Callback from './pages/OAuth2Callback';
+import Profile from './pages/Profile';
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const token = localStorage.getItem('token');
@@ -21,6 +22,7 @@ export default function App() {
         <Route path="/oauth2/callback" element={<OAuth2Callback />} />
         <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
         <Route path="/trips/:id" element={<PrivateRoute><TripDetail /></PrivateRoute>} />
+        <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
       </Routes>
     </Router>
   );
