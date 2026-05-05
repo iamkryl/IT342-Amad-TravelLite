@@ -268,7 +268,7 @@ export default function TripDetail() {
   console.log('user.id:', user.id, 'trip.createdBy:', trip.createdBy, 'isOwner:', isOwner);
 
   return (
-    <div className="min-h-screen bg-[#F0F2F5]">
+    <div className="min-h-screen" style={{ background: 'linear-gradient(145deg, #eef0f4 0%, #e4e8ee 50%, #dde3eb 100%)' }}>
 
       {/* Navbar */}
       <div className="bg-[#1F2937] px-8 py-3 flex justify-between items-center shadow-lg sticky top-0 z-40">
@@ -324,7 +324,7 @@ export default function TripDetail() {
 
         {/* Companion view-only banner */}
         {isCompanion && (
-          <div className="flex items-center gap-3 bg-blue-50 border border-blue-100 rounded-2xl px-5 py-3.5 mb-5 shadow-sm">
+          <div className="flex items-center gap-3 rounded-2xl px-5 py-3.5 mb-5" style={{ background: 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)', borderLeft: '4px solid #0BA6DF', boxShadow: '0 4px 15px rgba(11,166,223,0.12)' }}>
             <div className="w-8 h-8 rounded-lg bg-[#0BA6DF]/10 flex items-center justify-center flex-shrink-0">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-[#0BA6DF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -339,13 +339,13 @@ export default function TripDetail() {
         )}
 
         {/* Trip Header Card */}
-        <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/60 border border-gray-100/80 overflow-hidden mb-5 hover:shadow-2xl hover:shadow-gray-200/80 hover:-translate-y-0.5 transition-all duration-300">
-          <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, #EF7722 0%, #f59340 60%, #0BA6DF 100%)' }} />
+        <div className="bg-white rounded-2xl overflow-hidden mb-5 hover:-translate-y-1 transition-all duration-300" style={{ boxShadow: '0 8px 32px rgba(0,0,0,0.10), 0 1px 0 rgba(255,255,255,0.8) inset', border: '1px solid rgba(255,255,255,0.9)' }}>
+          <div className="h-[3px] w-full" style={{ background: 'linear-gradient(90deg, #EF7722 0%, #f59340 40%, #0BA6DF 100%)' }} />
           <div className="p-6">
             <div className="flex justify-between items-start">
               <div>
                 <div className="flex items-center gap-3 mb-2">
-                  <h1 className="text-2xl font-bold text-[#111827] tracking-tight">{trip.title}</h1>
+                  <h1 className="text-3xl font-black text-[#111827] tracking-tight">{trip.title}</h1>
                   <span className="bg-blue-50 text-[#0BA6DF] font-bold px-3 py-1 rounded-lg text-sm border border-blue-100 hover:bg-blue-100 transition-colors duration-200">
                     {trip.destination}
                   </span>
@@ -409,7 +409,7 @@ export default function TripDetail() {
         </div>
 
         {/* Weather Card */}
-        <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/60 border border-gray-100/80 overflow-hidden mb-5 group hover:shadow-2xl hover:shadow-gray-200/80 hover:-translate-y-0.5 transition-all duration-300">
+        <div className="bg-white rounded-2xl overflow-hidden mb-5 group hover:shadow-2xl hover:shadow-gray-200/80 hover:-translate-y-0.5 transition-all duration-300">
           <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, #EF7722 0%, #0BA6DF 100%)' }} />
           <div className="p-5">
             {weather ? (
@@ -453,7 +453,7 @@ export default function TripDetail() {
           <div className="col-span-3 flex flex-col gap-5">
 
             {/* Budget Card */}
-            <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/60 border border-gray-100/80 overflow-hidden hover:shadow-2xl hover:shadow-gray-200/80 hover:-translate-y-0.5 transition-all duration-300">
+            <div className="bg-white rounded-2xl overflow-hidden hover:shadow-2xl hover:shadow-gray-200/80 hover:-translate-y-0.5 transition-all duration-300">
               <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, #EF7722 0%, #f59340 100%)' }} />
               <div className="p-6">
                 <div className="flex items-center gap-2 mb-5">
@@ -495,7 +495,7 @@ export default function TripDetail() {
             </div>
 
             {/* Places Card */}
-            <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/60 border border-gray-100/80 overflow-hidden hover:shadow-2xl hover:shadow-gray-200/80 hover:-translate-y-0.5 transition-all duration-300">
+            <div  className="bg-white rounded-2xl shadow-xl shadow-gray-200/60 border border-gray-100/80 overflow-hiddenhover:shadow-2xl hover:shadow-gray-200/80 hover:-translate-y-0.5 transition-all duration-300">
               <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, #0BA6DF 0%, #0891c2 100%)' }} />
               <div className="p-6">
                 <div className="flex items-center gap-2 mb-5">
@@ -533,7 +533,7 @@ export default function TripDetail() {
           <div className="col-span-2 flex flex-col gap-5">
 
             {/* Companions Card */}
-            <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/60 border border-gray-100/80 overflow-hidden hover:shadow-2xl hover:shadow-gray-200/80 hover:-translate-y-0.5 transition-all duration-300">
+            <div className="bg-white rounded-2xl overflow-hidden hover:shadow-2xl hover:shadow-gray-200/80 hover:-translate-y-0.5 transition-all duration-300">
               <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, #0BA6DF 0%, #0891c2 100%)' }} />
               <div className="p-6">
                 <div className="flex items-center gap-2 mb-5">
@@ -551,7 +551,7 @@ export default function TripDetail() {
                   <div className="space-y-4">
                     {trip.companions.map(companion => (
                       <div key={companion.companionId} className="flex items-center gap-3 group/comp">
-                        <div className="bg-gradient-to-br from-[#0BA6DF] to-[#0891c2] rounded-xl w-10 h-10 flex items-center justify-center text-white text-sm font-bold flex-shrink-0 shadow-sm shadow-blue-100 group-hover/comp:shadow-md group-hover/comp:shadow-blue-200 group-hover/comp:scale-105 transition-all duration-200">
+                        <div className="rounded-xl w-10 h-10 flex items-center justify-center text-white text-sm font-black flex-shrink-0 transition-all duration-200 group-hover/comp:scale-105" style={{ background: 'linear-gradient(135deg, #0BA6DF 0%, #0369a1 100%)', boxShadow: '0 4px 12px rgba(11,166,223,0.35)' }}>
                           {getInitials(companion.firstName, companion.lastName)}
                         </div>
                         <div>
@@ -575,7 +575,7 @@ export default function TripDetail() {
             </div>
 
             {/* Checklist Card */}
-            <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/60 border border-gray-100/80 overflow-hidden hover:shadow-2xl hover:shadow-gray-200/80 hover:-translate-y-0.5 transition-all duration-300">
+            <div className="bg-white rounded-2xl overflow-hidden hover:shadow-2xl hover:shadow-gray-200/80 hover:-translate-y-0.5 transition-all duration-300">
               <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, #EF7722 0%, #f59340 100%)' }} />
               <div className="p-6">
                 <div className="flex items-center justify-between mb-5">
@@ -591,9 +591,19 @@ export default function TripDetail() {
                     <p className="text-[#EF7722] font-bold text-xs tracking-widest">PACKING CHECKLIST</p>
                   </div>
                   {checklist.length > 0 && (
-                    <span className="text-xs text-gray-400 font-medium bg-gray-50 px-2 py-1 rounded-lg border border-gray-100">
-                      {checklist.filter(i => i.isChecked).length}/{checklist.length} packed
-                    </span>
+                    isOwner ? (
+                      <span className="text-xs text-gray-400 font-medium bg-gray-50 px-2 py-1 rounded-lg border border-gray-100">
+                        {checklist.filter(i => i.isChecked).length}/{checklist.length} packed
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-1 text-xs text-gray-400 font-medium bg-gray-50 px-2 py-1 rounded-lg border border-gray-100">
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                          <rect x="3" y="11" width="18" height="11" rx="2" />
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M7 11V7a5 5 0 0110 0v4" />
+                        </svg>
+                        View only
+                      </span>
+                    )
                   )}
                 </div>
                 {checklist && checklist.length > 0 ? (
@@ -615,8 +625,8 @@ export default function TripDetail() {
                             item.isChecked
                               ? 'bg-[#EF7722] border-[#EF7722] shadow-sm shadow-orange-200'
                               : isOwner
-                                ? 'border-gray-300 group-hover/check:border-[#EF7722] group-hover/check:shadow-sm group-hover/check:shadow-orange-100'
-                                : 'border-gray-200 bg-gray-50'
+                              ? 'border-gray-300'
+                              : 'border-gray-200 bg-gray-50'
                           }`}>
                             {item.isChecked && (
                               <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-white" viewBox="0 0 20 20" fill="currentColor">
