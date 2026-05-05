@@ -27,6 +27,19 @@ export default function Profile() {
   const [completedCrop, setCompletedCrop] = useState<Crop>();
   const imgRef = useRef<HTMLImageElement>(null);
   const [editingInfo, setEditingInfo] = useState(false);
+  const [showLeaveDialog, setShowLeaveDialog] = useState(false);
+  const [pendingNavigation, setPendingNavigation] = useState(false);
+
+    useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+        if (editingInfo || showPasswordFields) {
+        e.preventDefault();
+        e.returnValue = '';
+        }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    }, [editingInfo, showPasswordFields]);
 
   useEffect(() => {
     getProfile().then((res) => {
@@ -56,6 +69,10 @@ export default function Profile() {
       setProfile(res.data.data);
       setPassword('');
       setConfirmPassword('');
+      const updatedUser = JSON.parse(localStorage.getItem('user') || '{}');
+      updatedUser.first_name = firstName;
+      updatedUser.last_name = lastName;
+      localStorage.setItem('user', JSON.stringify(updatedUser));
       setMessage('Profile updated successfully.');
       setEditingInfo(false);
       setShowPasswordFields(false);
@@ -147,13 +164,20 @@ export default function Profile() {
       {/* Navbar */}
       <div className="bg-[#1F2937] px-8 py-3 flex justify-between items-center shadow-lg sticky top-0 z-40">
         <div className="flex items-center gap-4">
-        <button
-            onClick={() => navigate(-1)}
-            className="text-gray-400 hover:text-white transition-colors p-1.5 rounded-lg hover:bg-white hover:bg-opacity-10"
+       <button
+        type="button"
+        onClick={() => {
+        if (editingInfo || showPasswordFields) {
+            setShowLeaveDialog(true);
+        } else {
+            navigate(-1);
+        }
+        }}
+        className="text-gray-400 hover:text-white transition-colors p-1.5 rounded-lg hover:bg-white hover:bg-opacity-10"
         >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
+        </svg>
         </button>
         <div className="flex items-center gap-3">
             <img src={require('../assets/travellite.png')} alt="TravelLite" className="h-10 w-10 object-contain drop-shadow-md" />
@@ -354,6 +378,34 @@ export default function Profile() {
           </div>
         </div>
       )}
+
+      {/* Leave Dialog */}
+      {showLeaveDialog && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl border border-gray-100">
+            <div className="w-12 h-12 bg-orange-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#EF7722]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-bold text-[#111827] mb-1 text-center">Unsaved Changes</h3>
+            <p className="text-gray-400 text-sm mb-6 text-center">
+              You have unsaved changes. Do you want to leave without saving?
+            </p>
+            <div className="flex gap-3">
+              <button type="button" onClick={() => setShowLeaveDialog(false)}
+                className="flex-1 px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm text-gray-500 hover:bg-gray-50 transition-all font-medium">
+                Stay
+              </button>
+              <button type="button" onClick={() => { setShowLeaveDialog(false); navigate(-1); }}
+                className="flex-1 px-4 py-2.5 bg-[#EF7722] text-white rounded-xl text-sm font-bold hover:bg-orange-600 transition-all shadow-md shadow-orange-100">
+                Leave
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
