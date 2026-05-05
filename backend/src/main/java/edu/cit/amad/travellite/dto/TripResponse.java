@@ -20,6 +20,7 @@ public class TripResponse {
     private List<PlaceResponse> places;
     private List<ChecklistItemResponse> checklistItems;
     private List<CompanionResponse> companions;
+    private Long createdBy;
 
     // Nested classes
     public static class BudgetItemResponse {
@@ -113,4 +114,7 @@ public class TripResponse {
 
     public List<CompanionResponse> getCompanions() { return companions; }
     public void setCompanions(List<CompanionResponse> companions) { this.companions = companions; }
+
+    public Long getCreatedBy() { return createdBy; }
+    public void setCreatedBy(Long createdBy) { this.createdBy = createdBy; }
 }

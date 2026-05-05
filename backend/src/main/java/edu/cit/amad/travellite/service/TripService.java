@@ -126,7 +126,8 @@ public class TripService {
         item.setIsChecked(isChecked);
         checklistItemRepository.save(item);
     }
-    private TripResponse mapToResponse(Trip trip) {
+    private TripResponse mapToResponse
+            (Trip trip) {
         TripResponse response = new TripResponse();
         response.setTripId(trip.getTripId());
         response.setTitle(trip.getTitle());
@@ -135,6 +136,7 @@ public class TripService {
         response.setStartDate(trip.getStartDate());
         response.setEndDate(trip.getEndDate());
         response.setCreatedAt(trip.getCreatedAt());
+        response.setCreatedBy(trip.getUser().getUserId());
 
         if (trip.getStartDate() != null && trip.getEndDate() != null) {
             response.setDuration(ChronoUnit.DAYS.between(trip.getStartDate(), trip.getEndDate()));
