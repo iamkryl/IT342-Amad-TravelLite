@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import logo from '../assets/travellite.png';
+import PlaceAutocomplete from '../components/PlaceAutocomplete';
 
 interface DashboardData {
   totalTrips: number;
@@ -663,94 +664,40 @@ function PlanTripModal({
           </div>
 
           <div className="grid grid-cols-2 gap-[10px]">
-            <div className="flex flex-col gap-[5px]">
-              <label className="text-[11.5px] font-semibold text-[#9ca3af] tracking-wide">
-                From <span className="text-[#EF7722]">*</span>
-              </label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6b7280]">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                </span>
-                <input
-                  type="text"
-                  placeholder="e.g. Manila"
-                  value={origin}
-                  onChange={(e) => setOrigin(e.target.value)}
-                  className={iconInput}
-                />
-              </div>
-            </div>
+          <div className="flex flex-col gap-[5px]">
+            <label className="text-[11.5px] font-semibold text-[#9ca3af] tracking-wide">
+              From <span className="text-[#EF7722]">*</span>
+            </label>
+            <PlaceAutocomplete value={origin} onChange={setOrigin} placeholder="e.g. Manila" />
+          </div>
 
-            <div className="flex flex-col gap-[5px]">
-              <label className="text-[11.5px] font-semibold text-[#9ca3af] tracking-wide">
-                Destination <span className="text-[#EF7722]">*</span>
-              </label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6b7280]">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                </span>
-                <input
-                  type="text"
-                  placeholder="e.g. Boracay"
-                  value={destination}
-                  onChange={(e) => setDestination(e.target.value)}
-                  className={iconInput}
-                />
-              </div>
-            </div>
+          <div className="flex flex-col gap-[5px]">
+            <label className="text-[11.5px] font-semibold text-[#9ca3af] tracking-wide">
+              Destination <span className="text-[#EF7722]">*</span>
+            </label>
+            <PlaceAutocomplete value={destination} onChange={setDestination} placeholder="e.g. Boracay" />
+          </div>
 
-            <div className="flex flex-col gap-[5px]">
-              <label className="text-[11.5px] font-semibold text-[#9ca3af] tracking-wide">
-                Start Date <span className="text-[#EF7722]">*</span>
-              </label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6b7280] pointer-events-none">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                    <rect x="3" y="4" width="18" height="18" rx="2" />
-                    <line x1="16" y1="2" x2="16" y2="6" />
-                    <line x1="8" y1="2" x2="8" y2="6" />
-                    <line x1="3" y1="10" x2="21" y2="10" />
-                  </svg>
-                </span>
-                <input
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className={iconInput}
-                  style={{ colorScheme: 'dark' }}
-                />
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-[5px]">
-              <label className="text-[11.5px] font-semibold text-[#9ca3af] tracking-wide">
-                End Date <span className="text-[#EF7722]">*</span>
-              </label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6b7280] pointer-events-none">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                    <rect x="3" y="4" width="18" height="18" rx="2" />
-                    <line x1="16" y1="2" x2="16" y2="6" />
-                    <line x1="8" y1="2" x2="8" y2="6" />
-                    <line x1="3" y1="10" x2="21" y2="10" />
-                  </svg>
-                </span>
-                <input
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  className={iconInput}
-                  style={{ colorScheme: 'dark' }}
-                />
-              </div>
+          <div className="flex flex-col gap-[5px]">
+            <label className="text-[11.5px] font-semibold text-[#9ca3af] tracking-wide">
+              Start Date <span className="text-[#EF7722]">*</span>
+            </label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6b7280] pointer-events-none">...</span>
+              <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className={iconInput} style={{ colorScheme: 'dark' }} />
             </div>
           </div>
+
+          <div className="flex flex-col gap-[5px]">
+            <label className="text-[11.5px] font-semibold text-[#9ca3af] tracking-wide">
+              End Date <span className="text-[#EF7722]">*</span>
+            </label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6b7280] pointer-events-none">...</span>
+              <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className={iconInput} style={{ colorScheme: 'dark' }} />
+            </div>
+          </div>
+        </div>
 
           {/* BUDGET */}
           <Divider />
