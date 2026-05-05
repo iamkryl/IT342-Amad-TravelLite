@@ -144,7 +144,6 @@ export default function TripDetail() {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = res.data.data;
-      console.log('profile data:', data);
       setUser((prev: any) => ({
         ...prev,
         id: data.userId,
@@ -260,12 +259,10 @@ export default function TripDetail() {
     );
   }
 
-  // Fix type mismatch: localStorage stores strings, trip.createdBy is a number
   const isOwner = Number(user.id) === Number(trip.createdBy);
   const isCompanion = !isOwner;
   const weatherGradient = weather ? getWeatherGradient(weather.condition) : 'from-[#EF7722] to-[#f59340]';
 
-  console.log('user.id:', user.id, 'trip.createdBy:', trip.createdBy, 'isOwner:', isOwner);
 
   return (
     <div className="min-h-screen" style={{ background: 'linear-gradient(145deg, #eef0f4 0%, #e4e8ee 50%, #dde3eb 100%)' }}>
@@ -884,15 +881,22 @@ function EditTripModal({
           <ModalDivider />
           <ModalSectionLabel>BUDGET</ModalSectionLabel>
           {budgetItems.map((item, index) => (
-            <div key={index} className="grid grid-cols-2 gap-[10px] mb-[10px]">
-              <input type="text" placeholder="Category (e.g. Food)" value={item.category}
-                onChange={e => { const u = [...budgetItems]; u[index].category = e.target.value; setBudgetItems(u); }}
-                className={darkInput} />
+          <div key={index} className="grid grid-cols-2 gap-[10px] mb-[10px]">
+            <input type="text" placeholder="Category (e.g. Food)" value={item.category}
+              onChange={e => { const u = [...budgetItems]; u[index].category = e.target.value; setBudgetItems(u); }}
+              className={darkInput} />
+            <div className="flex gap-2">
               <input type="number" placeholder="₱ Amount" value={item.amount}
                 onChange={e => { const u = [...budgetItems]; u[index].amount = e.target.value; setBudgetItems(u); }}
                 className={darkInput} style={{ colorScheme: 'dark' }} />
+              {budgetItems.length > 1 && (
+                <button onClick={() => setBudgetItems(budgetItems.filter((_, i) => i !== index))} className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-lg text-[#4b5563] hover:text-red-400 hover:bg-red-400/10 transition-all">
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                </button>
+              )}
             </div>
-          ))}
+          </div>
+        ))}
           <button
             onClick={() => setBudgetItems([...budgetItems, { category: '', amount: '' }])}
             className="flex items-center gap-1 text-[#0BA6DF] text-xs font-bold px-[14px] py-2 rounded-[9px] transition-colors"
@@ -910,16 +914,21 @@ function EditTripModal({
           <ModalDivider />
           <ModalSectionLabel>PLACES TO EXPLORE</ModalSectionLabel>
           {places.map((item, index) => (
-            <div key={index} className="flex items-center gap-2 mb-2">
-              <div className="w-6 h-6 rounded-[6px] flex items-center justify-center text-[11px] font-bold flex-shrink-0"
-                style={{ background: 'rgba(11,166,223,0.15)', color: '#0BA6DF' }}>
-                {index + 1}
-              </div>
-              <input type="text" placeholder="Place name" value={item.name}
-                onChange={e => { const u = [...places]; u[index].name = e.target.value; setPlaces(u); }}
-                className={darkInput} />
+          <div key={index} className="flex items-center gap-2 mb-2">
+            <div className="w-6 h-6 rounded-[6px] flex items-center justify-center text-[11px] font-bold flex-shrink-0"
+              style={{ background: 'rgba(11,166,223,0.15)', color: '#0BA6DF' }}>
+              {index + 1}
             </div>
-          ))}
+            <input type="text" placeholder="Place name" value={item.name}
+              onChange={e => { const u = [...places]; u[index].name = e.target.value; setPlaces(u); }}
+              className={darkInput} />
+            {places.length > 1 && (
+              <button onClick={() => setPlaces(places.filter((_, i) => i !== index))} className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-lg text-[#4b5563] hover:text-red-400 hover:bg-red-400/10 transition-all">
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+              </button>
+            )}
+          </div>
+        ))}
           <button
             onClick={() => setPlaces([...places, { name: '' }])}
             className="flex items-center gap-1 text-[#0BA6DF] text-xs font-bold px-[14px] py-2 rounded-[9px] transition-colors"
@@ -977,13 +986,18 @@ function EditTripModal({
           <ModalDivider />
           <ModalSectionLabel>PACKING CHECKLIST</ModalSectionLabel>
           {checklistItems.map((item, index) => (
-            <div key={index} className="flex items-center gap-3 mb-2">
-              <div className="w-4 h-4 rounded flex-shrink-0" style={{ border: '1.5px solid #EF7722', background: 'transparent' }} />
-              <input type="text" placeholder="Item name" value={item.name}
-                onChange={e => { const u = [...checklistItems]; u[index].name = e.target.value; setChecklistItems(u); }}
-                className={darkInput} />
-            </div>
-          ))}
+          <div key={index} className="flex items-center gap-3 mb-2">
+            <div className="w-4 h-4 rounded flex-shrink-0" style={{ border: '1.5px solid #EF7722', background: 'transparent' }} />
+            <input type="text" placeholder="Item name" value={item.name}
+              onChange={e => { const u = [...checklistItems]; u[index].name = e.target.value; setChecklistItems(u); }}
+              className={darkInput} />
+            {checklistItems.length > 1 && (
+              <button onClick={() => setChecklistItems(checklistItems.filter((_, i) => i !== index))} className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-lg text-[#4b5563] hover:text-red-400 hover:bg-red-400/10 transition-all">
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+              </button>
+            )}
+          </div>
+        ))}
           <button
             onClick={() => setChecklistItems([...checklistItems, { name: '' }])}
             className="flex items-center gap-1 text-[#0BA6DF] text-xs font-bold px-[14px] py-2 rounded-[9px] transition-colors"
