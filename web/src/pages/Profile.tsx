@@ -57,6 +57,8 @@ export default function Profile() {
       setPassword('');
       setConfirmPassword('');
       setMessage('Profile updated successfully.');
+      setEditingInfo(false);
+      setShowPasswordFields(false);
     } catch {
       setError('Failed to update profile.');
     } finally {
@@ -141,7 +143,7 @@ export default function Profile() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F0F2F5]">
+    <div className="min-h-screen" style={{ background: 'linear-gradient(145deg, #eef0f4 0%, #e4e8ee 50%, #dde3eb 100%)' }}>
       {/* Navbar */}
       <div className="bg-[#1F2937] px-8 py-3 flex justify-between items-center shadow-lg sticky top-0 z-40">
         <div className="flex items-center gap-3">
@@ -160,12 +162,12 @@ export default function Profile() {
                 <span className="text-white text-sm font-bold">{getInitials()}</span>
             )}
             </div>
-          <button onClick={() => window.location.href = '/dashboard'} className="text-gray-400 hover:text-white transition-colors p-1.5 rounded-lg hover:bg-white hover:bg-opacity-10">
+          <button className="text-[#EF7722] p-1.5 rounded-lg bg-white bg-opacity-10 cursor-default">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-          </button>
+            </button>
           <button onClick={() => { localStorage.removeItem('token'); localStorage.removeItem('user'); navigate('/login'); }} className="text-gray-400 hover:text-red-400 transition-colors p-1.5 rounded-lg hover:bg-red-400 hover:bg-opacity-10">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -187,7 +189,7 @@ export default function Profile() {
           Back to Dashboard
         </button>
 
-        <h2 className="text-2xl font-bold text-[#111827] mb-6 tracking-tight">Profile Settings</h2>
+        <h2 className="text-2xl font-black text-[#111827] mb-6 tracking-tight">Profile Settings</h2>
 
         {message && (
           <div className="flex items-center gap-3 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl mb-5 text-sm font-medium">
@@ -207,121 +209,96 @@ export default function Profile() {
         )}
 
         {/* Photo Card */}
-        <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-8 mb-4 flex flex-col items-center hover:shadow-lg transition-shadow duration-300">
-          <div className="relative group mb-4">
+        <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/60 border border-gray-100/80 overflow-hidden mb-4 flex flex-col items-center">
+        <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, #EF7722 0%, #f59340 100%)' }} />
+        <div className="p-8 flex flex-col items-center w-full">
+            <div className="relative group mb-4">
             <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[#10B981] to-[#059669] flex items-center justify-center text-white text-3xl font-bold shadow-lg ring-4 ring-green-100 overflow-hidden transition-transform duration-300 group-hover:scale-105">
-              {profile.photoUrl ? (
+                {profile.photoUrl ? (
                 <img src={`http://localhost:8080${profile.photoUrl}`} alt="avatar" className="w-24 h-24 object-cover" />
-              ) : (
-                getInitials()
-              )}
+                ) : (getInitials())}
             </div>
-          </div>
-          <label className="flex items-center gap-2 border border-[#0BA6DF] text-[#0BA6DF] px-5 py-2 rounded-lg cursor-pointer text-sm font-semibold hover:bg-[#0BA6DF] hover:text-white transition-all duration-200 shadow-sm hover:shadow-md">
+            </div>
+            <label className="flex items-center gap-2 border border-[#0BA6DF] text-[#0BA6DF] px-5 py-2 rounded-lg cursor-pointer text-sm font-semibold hover:bg-[#0BA6DF] hover:text-white transition-all duration-200 shadow-sm hover:shadow-md">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
             </svg>
             {photoLoading ? 'Uploading...' : 'Upload Photo'}
             <input type="file" accept="image/jpeg,image/png" onChange={onSelectFile} className="hidden" />
-          </label>
-          <p className="text-gray-400 text-xs mt-2">JPG or PNG, max 2MB</p>
+            </label>
+            <p className="text-gray-400 text-xs mt-2">JPG or PNG, max 2MB</p>
+        </div>
         </div>
 
         {/* Personal Information Card */}
-        <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-6 mb-4 hover:shadow-lg transition-shadow duration-300">
-          <div className="flex justify-between items-center mb-5">
+        <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/60 border border-gray-100/80 overflow-hidden mb-4">
+        <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, #EF7722 0%, #f59340 100%)' }} />
+        <div className="p-6">
+            <div className="flex justify-between items-center mb-5">
             <h3 className="text-lg font-bold text-[#111827]">Personal Information</h3>
             <button
-              onClick={() => { setEditingInfo(!editingInfo); setFirstName(profile.firstName); setLastName(profile.lastName); }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 ${editingInfo ? 'bg-red-50 text-red-500 hover:bg-red-100' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
+                onClick={() => { setEditingInfo(!editingInfo); setFirstName(profile.firstName); setLastName(profile.lastName); }}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 ${editingInfo ? 'bg-red-50 text-red-500 hover:bg-red-100' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
             >
-              {editingInfo ? (
-                <>
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                  Cancel
-                </>
-              ) : (
-                <>
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                  </svg>
-                  Edit
-                </>
-              )}
+                {editingInfo ? (
+                <><svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>Cancel</>
+                ) : (
+                <><svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>Edit</>
+                )}
             </button>
-          </div>
-          <div className="grid grid-cols-2 gap-4 mb-4">
+            </div>
+            <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">First Name</label>
-              <input
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                disabled={!editingInfo}
-                className={`w-full px-4 py-2.5 rounded-xl border text-sm text-[#111827] outline-none transition-all duration-200 ${editingInfo ? 'border-gray-200 focus:border-[#EF7722] focus:ring-2 focus:ring-orange-100 hover:border-gray-300' : 'border-gray-100 bg-gray-50 text-gray-400 cursor-not-allowed'}`}
-              />
+                <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">First Name</label>
+                <input value={firstName} onChange={(e) => setFirstName(e.target.value)} disabled={!editingInfo}
+                className={`w-full px-4 py-2.5 rounded-xl border text-sm text-[#111827] outline-none transition-all duration-200 ${editingInfo ? 'border-gray-200 focus:border-[#EF7722] focus:ring-2 focus:ring-orange-100 hover:border-gray-300' : 'border-gray-100 bg-gray-50 text-gray-400 cursor-not-allowed'}`} />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">Last Name</label>
-              <input
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                disabled={!editingInfo}
-                className={`w-full px-4 py-2.5 rounded-xl border text-sm text-[#111827] outline-none transition-all duration-200 ${editingInfo ? 'border-gray-200 focus:border-[#EF7722] focus:ring-2 focus:ring-orange-100 hover:border-gray-300' : 'border-gray-100 bg-gray-50 text-gray-400 cursor-not-allowed'}`}
-              />
+                <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">Last Name</label>
+                <input value={lastName} onChange={(e) => setLastName(e.target.value)} disabled={!editingInfo}
+                className={`w-full px-4 py-2.5 rounded-xl border text-sm text-[#111827] outline-none transition-all duration-200 ${editingInfo ? 'border-gray-200 focus:border-[#EF7722] focus:ring-2 focus:ring-orange-100 hover:border-gray-300' : 'border-gray-100 bg-gray-50 text-gray-400 cursor-not-allowed'}`} />
             </div>
-          </div>
-          <div>
+            </div>
+            <div>
             <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">Email Address</label>
-            <input
-              value={profile.email}
-              disabled
-              className="w-full px-4 py-2.5 rounded-xl border border-gray-100 text-sm text-gray-400 bg-gray-50 cursor-not-allowed"
-            />
-          </div>
+            <input value={profile.email} disabled className="w-full px-4 py-2.5 rounded-xl border border-gray-100 text-sm text-gray-400 bg-gray-50 cursor-not-allowed" />
+            </div>
+        </div>
         </div>
 
         {/* Change Password Card */}
-        <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-6 mb-6 hover:shadow-lg transition-shadow duration-300">
-          <div className="flex justify-between items-center">
+        <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/60 border border-gray-100/80 overflow-hidden mb-6">
+        <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, #EF7722 0%, #f59340 100%)' }} />
+        <div className="p-6">
+            <div className="flex justify-between items-center">
             <div>
-              <h3 className="text-lg font-bold text-[#111827]">Change Password</h3>
-              {!showPasswordFields && (
+                <h3 className="text-lg font-bold text-[#111827]">Change Password</h3>
+                {!showPasswordFields && (
                 <p className="text-gray-400 text-sm mt-1">Click "Change Password" to update your password</p>
-              )}
+                )}
             </div>
             <button
-              onClick={() => { setShowPasswordFields(!showPasswordFields); setPassword(''); setConfirmPassword(''); }}
-              className="border border-[#0BA6DF] text-[#0BA6DF] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#0BA6DF] hover:text-white transition-all duration-200 flex-shrink-0"
+                onClick={() => { setShowPasswordFields(!showPasswordFields); setPassword(''); setConfirmPassword(''); }}
+                className="border border-[#0BA6DF] text-[#0BA6DF] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#0BA6DF] hover:text-white transition-all duration-200 flex-shrink-0"
             >
-              {showPasswordFields ? 'Cancel' : 'Change Password'}
+                {showPasswordFields ? 'Cancel' : 'Change Password'}
             </button>
-          </div>
-          {showPasswordFields && (
-            <div className="mt-5 border-t border-gray-100 pt-5">
-              <div className="mb-4">
-                <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">New Password</label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="At least 8 characters"
-                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-[#EF7722] focus:ring-2 focus:ring-orange-100 transition-all duration-200"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">Confirm Password</label>
-                <input
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Repeat new password"
-                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-[#EF7722] focus:ring-2 focus:ring-orange-100 transition-all duration-200"
-                />
-              </div>
             </div>
-          )}
+            {showPasswordFields && (
+            <div className="mt-5 border-t border-gray-100 pt-5">
+                <div className="mb-4">
+                <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">New Password</label>
+                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 8 characters"
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-[#EF7722] focus:ring-2 focus:ring-orange-100 transition-all duration-200" />
+                </div>
+                <div>
+                <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">Confirm Password</label>
+                <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Repeat new password"
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-[#EF7722] focus:ring-2 focus:ring-orange-100 transition-all duration-200" />
+                </div>
+            </div>
+            )}
+        </div>
         </div>
 
         {/* Save Changes — only shows when editing */}
