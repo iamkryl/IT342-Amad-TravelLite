@@ -32,7 +32,10 @@ public class TripService {
         return tripRepository.findByUserUserId(userId)
                 .stream().map(this::mapToResponse).collect(Collectors.toList());
     }
-
+    public List<TripResponse> getCompanionTrips(Long userId) {
+        return tripRepository.findCompanionTripsByUserId(userId)
+                .stream().map(this::mapToResponse).collect(Collectors.toList());
+    }
     public TripResponse getTripById(Integer tripId) {
         Trip trip = tripRepository.findById(tripId)
                 .orElseThrow(() -> new RuntimeException("Trip not found"));

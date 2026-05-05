@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import edu.cit.amad.travellite.repository.UserRepository;
 import org.springframework.web.bind.annotation.RequestMethod;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.HashMap;
 import java.util.List;
@@ -53,6 +54,17 @@ public class TripController {
         Map<String, Object> response = new HashMap<>();
         response.put("success", true);
         response.put("data", trips);
+        response.put("error", null);
+        response.put("timestamp", java.time.LocalDateTime.now().toString());
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/trips/companion")
+    public ResponseEntity<?> getCompanionTrips(@AuthenticationPrincipal UserDetails userDetails) {
+        Long userId = getUserId(userDetails);
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("data", tripService.getCompanionTrips(userId));
         response.put("error", null);
         response.put("timestamp", java.time.LocalDateTime.now().toString());
         return ResponseEntity.ok(response);

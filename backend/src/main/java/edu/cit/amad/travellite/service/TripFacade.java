@@ -70,7 +70,10 @@ public class TripFacade {
 
     private void saveCompanions(Trip trip, TripRequest request) {
         if (request.getCompanions() == null) return;
+        String ownerEmail = trip.getUser().getEmail();
+        String ownerName = trip.getUser().getFirstName() + " " + trip.getUser().getLastName();
         for (TripRequest.CompanionRequest c : request.getCompanions()) {
+            if (c.getEmail().equalsIgnoreCase(ownerEmail)) continue;
             userRepository.findByEmail(c.getEmail()).ifPresent(companionUser -> {
                 TripCompanion companion = new TripCompanion();
                 companion.setTrip(trip);
@@ -79,10 +82,15 @@ public class TripFacade {
 
                 notificationContext.notify(
                         c.getEmail(),
-                        "You've been invited to a trip!",
-                        "You have been added as a companion to: "
-                                + trip.getTitle()
-                                + ". Log in to TravelLite to view it."
+                        "You've been added to a trip on TravelLite!",
+                        "Hi " + companionUser.getFirstName() + "!\n\n" +
+                                ownerName + " has added you as a travel companion for the trip:\n" +
+                                "🌍 " + trip.getTitle() + "\n" +
+                                "📍 " + trip.getOrigin() + " → " + trip.getDestination() + "\n" +
+                                "📅 " + trip.getStartDate() + " to " + trip.getEndDate() + "\n\n" +
+                                "Log in to your TravelLite account to view the full trip details.\n\n" +
+                                "Safe travels!\n" +
+                                "The TravelLite Team"
                 );
             });
         }
