@@ -9,9 +9,10 @@ interface Props {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
+  destinationBias?: string;
 }
 
-export default function PlaceAutocomplete({ value, onChange, placeholder }: Props) {
+export default function PlaceAutocomplete({ value, onChange, placeholder, destinationBias }: Props) {
   const [query, setQuery] = useState(value);
   const [suggestions, setSuggestions] = useState<Place[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -49,8 +50,11 @@ export default function PlaceAutocomplete({ value, onChange, placeholder }: Prop
     debounceRef.current = setTimeout(async () => {
       setLoading(true);
       try {
+        const searchQuery = destinationBias
+          ? `${val} ${destinationBias.split(',')[0].trim()}`
+          : val;
         const res = await fetch(
-          `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(val)}&format=json&limit=5`,
+          `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(searchQuery)}&format=json&limit=5`,
           { headers: { 'Accept-Language': 'en' } }
         );
         const data = await res.json();
@@ -65,7 +69,6 @@ export default function PlaceAutocomplete({ value, onChange, placeholder }: Prop
   };
 
   const handleSelect = (place: Place) => {
-    // Get clean short name (city, country only)
     const parts = place.display_name.split(',');
     const shortName = parts.slice(0, 2).join(',').trim();
     setQuery(shortName);
