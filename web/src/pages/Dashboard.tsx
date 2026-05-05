@@ -22,7 +22,7 @@ interface Trip {
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem('user') || '{}'));
   const token = localStorage.getItem('token');
 
   const [dashboard, setDashboard] = useState<DashboardData>({
@@ -40,8 +40,21 @@ export default function Dashboard() {
   useEffect(() => {
     fetchDashboard();
     fetchTrips();
+    fetchProfile();
   }, []);
 
+  const fetchProfile = async () => {
+    try {
+      const res = await axios.get('http://localhost:8080/api/v1/users/me', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = res.data.data;
+      setUser((prev: any) => ({ ...prev, photo_url: data.photoUrl }));
+    } catch (err) {
+      console.error('Failed to fetch profile', err);
+    }
+  };
+  
   const fetchDashboard = async () => {
     try {
       const res = await axios.get('http://localhost:8080/api/v1/dashboard', {
@@ -116,8 +129,12 @@ export default function Dashboard() {
         </div>
         <div className="flex items-center gap-4">
           <span className="text-gray-300 text-sm font-medium">{user.first_name} {user.last_name}</span>
-          <div className="bg-gradient-to-br from-[#10B981] to-[#059669] rounded-full w-9 h-9 flex items-center justify-center text-white text-sm font-bold shadow-md ring-2 ring-green-400 ring-opacity-30">
-            {getInitials()}
+          <div className="rounded-full w-9 h-9 overflow-hidden shadow-md ring-2 ring-green-400 ring-opacity-30 flex items-center justify-center bg-gradient-to-br from-[#10B981] to-[#059669]">
+            {user.photo_url ? (
+              <img src={`http://localhost:8080${user.photo_url}`} alt="avatar" className="w-9 h-9 object-cover" />
+            ) : (
+              <span className="text-white text-sm font-bold">{getInitials()}</span>
+            )}
           </div>
           <button onClick={() => navigate('/profile')} className="text-gray-400 hover:text-white transition-colors p-1.5 rounded-lg hover:bg-white hover:bg-opacity-10">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -52,7 +52,7 @@ export default function TripDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem('user') || '{}'));
 
   const [trip, setTrip] = useState<TripDetail | null>(null);
   const [weather, setWeather] = useState<WeatherData | null>(null);
@@ -65,6 +65,7 @@ export default function TripDetail() {
   useEffect(() => {
     fetchTrip();
     fetchWeather();
+    fetchProfile();
   }, [id]);
 
   const fetchTrip = async () => {
@@ -90,6 +91,18 @@ export default function TripDetail() {
       setWeather(res.data.data);
     } catch {
       setWeather(null);
+    }
+  };
+
+  const fetchProfile = async () => {
+    try {
+      const res = await axios.get('http://localhost:8080/api/v1/users/me', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = res.data.data;
+      setUser((prev: any) => ({ ...prev, photo_url: data.photoUrl }));
+    } catch (err) {
+      console.error('Failed to fetch profile', err);
     }
   };
 
@@ -176,10 +189,14 @@ export default function TripDetail() {
         </div>
         <div className="flex items-center gap-4">
           <span className="text-gray-300 text-sm font-medium">{user.first_name} {user.last_name}</span>
-          <div className="bg-gradient-to-br from-[#10B981] to-[#059669] rounded-full w-9 h-9 flex items-center justify-center text-white text-sm font-bold shadow-md ring-2 ring-green-400 ring-opacity-30">
-            {getUserInitials()}
+          <div className="rounded-full w-9 h-9 overflow-hidden shadow-md ring-2 ring-green-400 ring-opacity-30 flex items-center justify-center bg-gradient-to-br from-[#10B981] to-[#059669]">
+            {user.photo_url ? (
+              <img src={`http://localhost:8080${user.photo_url}`} alt="avatar" className="w-9 h-9 object-cover" />
+            ) : (
+              <span className="text-white text-sm font-bold">{getUserInitials()}</span>
+            )}
           </div>
-          <button className="text-gray-400 hover:text-white transition-colors p-1.5 rounded-lg hover:bg-white hover:bg-opacity-10">
+          <button onClick={() => navigate('/profile')} className="text-gray-400 hover:text-white transition-colors p-1.5 rounded-lg hover:bg-white hover:bg-opacity-10">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -466,19 +483,10 @@ export default function TripDetail() {
   );
 }
 
-/* ─────────────────────────────────────────────
-   EditTripModal — matches PlanTripModal exactly
-───────────────────────────────────────────── */
 function EditTripModal({
-  trip,
-  token,
-  onClose,
-  onSuccess,
+  trip, token, onClose, onSuccess,
 }: {
-  trip: TripDetail;
-  token: string;
-  onClose: () => void;
-  onSuccess: () => void;
+  trip: TripDetail; token: string; onClose: () => void; onSuccess: () => void;
 }) {
   const [title, setTitle] = useState(trip.title);
   const [origin, setOrigin] = useState(trip.origin);
@@ -532,27 +540,13 @@ function EditTripModal({
     }
   };
 
-  const darkInput =
-    'w-full bg-[#111827] border border-white/8 rounded-[10px] px-3 py-[11px] text-[#e5e7eb] text-[13.5px] placeholder-[#4b5563] outline-none focus:border-[#EF7722] transition-colors';
-
-  const iconInput =
-    'w-full bg-[#111827] border border-white/8 rounded-[10px] pl-10 pr-3 py-[11px] text-[#e5e7eb] text-[13.5px] placeholder-[#4b5563] outline-none focus:border-[#EF7722] transition-colors';
+  const darkInput = 'w-full bg-[#111827] border border-white/8 rounded-[10px] px-3 py-[11px] text-[#e5e7eb] text-[13.5px] placeholder-[#4b5563] outline-none focus:border-[#EF7722] transition-colors';
+  const iconInput = 'w-full bg-[#111827] border border-white/8 rounded-[10px] pl-10 pr-3 py-[11px] text-[#e5e7eb] text-[13.5px] placeholder-[#4b5563] outline-none focus:border-[#EF7722] transition-colors';
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div
-        className="rounded-2xl w-full max-w-2xl flex flex-col"
-        style={{
-          background: '#1a2332',
-          border: '1px solid rgba(255,255,255,0.08)',
-          maxHeight: '85vh',
-        }}
-      >
-        {/* Header */}
-        <div
-          className="flex-shrink-0 flex justify-between items-center px-6 py-[18px] rounded-t-2xl"
-          style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}
-        >
+      <div className="rounded-2xl w-full max-w-2xl flex flex-col" style={{ background: '#1a2332', border: '1px solid rgba(255,255,255,0.08)', maxHeight: '85vh' }}>
+        <div className="flex-shrink-0 flex justify-between items-center px-6 py-[18px] rounded-t-2xl" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'rgba(11,166,223,0.15)' }}>
               <svg className="w-4 h-4 text-[#0BA6DF]" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
@@ -561,26 +555,12 @@ function EditTripModal({
             </div>
             <span className="text-white font-semibold text-lg">Edit Trip</span>
           </div>
-          <button
-            onClick={onClose}
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-[#9ca3af] hover:text-white text-xl font-bold transition-colors"
-            style={{ background: 'rgba(255,255,255,0.08)' }}
-          >
-            ×
-          </button>
+          <button onClick={onClose} className="w-8 h-8 rounded-lg flex items-center justify-center text-[#9ca3af] hover:text-white text-xl font-bold transition-colors" style={{ background: 'rgba(255,255,255,0.08)' }}>×</button>
         </div>
 
-        {/* Scrollable Body */}
-        <div
-          className="flex-1 overflow-y-auto px-6 pt-5 pb-2"
-          style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.1) transparent' }}
-        >
-          {/* Error */}
+        <div className="flex-1 overflow-y-auto px-6 pt-5 pb-2" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.1) transparent' }}>
           {error && (
-            <div
-              className="flex items-center gap-2 text-red-400 text-sm mb-5 px-4 py-3 rounded-xl"
-              style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)' }}
-            >
+            <div className="flex items-center gap-2 text-red-400 text-sm mb-5 px-4 py-3 rounded-xl" style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)' }}>
               <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                 <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
               </svg>
@@ -588,18 +568,12 @@ function EditTripModal({
             </div>
           )}
 
-          {/* TRIP INFORMATION */}
           <ModalSectionLabel>TRIP INFORMATION</ModalSectionLabel>
-
           <div className="mb-[10px]">
-            <label className="block text-[11.5px] font-semibold text-[#9ca3af] tracking-wide mb-[5px]">
-              Trip Title <span className="text-[#EF7722]">*</span>
-            </label>
+            <label className="block text-[11.5px] font-semibold text-[#9ca3af] tracking-wide mb-[5px]">Trip Title <span className="text-[#EF7722]">*</span></label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6b7280]">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                </svg>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
               </span>
               <input type="text" placeholder="e.g. Summer Beach Vacation" value={title} onChange={e => setTitle(e.target.value)} className={iconInput} />
             </div>
@@ -609,172 +583,82 @@ function EditTripModal({
             <div className="flex flex-col gap-[5px]">
               <label className="text-[11.5px] font-semibold text-[#9ca3af] tracking-wide">From <span className="text-[#EF7722]">*</span></label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6b7280]">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                </span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6b7280]"><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg></span>
                 <input type="text" placeholder="e.g. Manila" value={origin} onChange={e => setOrigin(e.target.value)} className={iconInput} />
               </div>
             </div>
             <div className="flex flex-col gap-[5px]">
               <label className="text-[11.5px] font-semibold text-[#9ca3af] tracking-wide">Destination <span className="text-[#EF7722]">*</span></label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6b7280]">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                </span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6b7280]"><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg></span>
                 <input type="text" placeholder="e.g. Boracay" value={destination} onChange={e => setDestination(e.target.value)} className={iconInput} />
               </div>
             </div>
             <div className="flex flex-col gap-[5px]">
               <label className="text-[11.5px] font-semibold text-[#9ca3af] tracking-wide">Start Date <span className="text-[#EF7722]">*</span></label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6b7280] pointer-events-none">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                    <rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" />
-                  </svg>
-                </span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6b7280] pointer-events-none"><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg></span>
                 <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} className={iconInput} style={{ colorScheme: 'dark' }} />
               </div>
             </div>
             <div className="flex flex-col gap-[5px]">
               <label className="text-[11.5px] font-semibold text-[#9ca3af] tracking-wide">End Date <span className="text-[#EF7722]">*</span></label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6b7280] pointer-events-none">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                    <rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" />
-                  </svg>
-                </span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6b7280] pointer-events-none"><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg></span>
                 <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} className={iconInput} style={{ colorScheme: 'dark' }} />
               </div>
             </div>
           </div>
 
-          {/* BUDGET */}
           <ModalDivider />
           <ModalSectionLabel>BUDGET</ModalSectionLabel>
-
           {budgetItems.map((item, index) => (
             <div key={index} className="grid grid-cols-2 gap-[10px] mb-[10px]">
-              <input type="text" placeholder="Category (e.g. Food)" value={item.category}
-                onChange={e => { const u = [...budgetItems]; u[index].category = e.target.value; setBudgetItems(u); }}
-                className={darkInput} />
-              <input type="number" placeholder="₱ Amount" value={item.amount}
-                onChange={e => { const u = [...budgetItems]; u[index].amount = e.target.value; setBudgetItems(u); }}
-                className={darkInput} style={{ colorScheme: 'dark' }} />
+              <input type="text" placeholder="Category (e.g. Food)" value={item.category} onChange={e => { const u = [...budgetItems]; u[index].category = e.target.value; setBudgetItems(u); }} className={darkInput} />
+              <input type="number" placeholder="₱ Amount" value={item.amount} onChange={e => { const u = [...budgetItems]; u[index].amount = e.target.value; setBudgetItems(u); }} className={darkInput} style={{ colorScheme: 'dark' }} />
             </div>
           ))}
-
-          <button
-            onClick={() => setBudgetItems([...budgetItems, { category: '', amount: '' }])}
-            className="flex items-center gap-1 text-[#0BA6DF] text-xs font-bold px-[14px] py-2 rounded-[9px] transition-colors"
-            style={{ border: '1.5px solid #0BA6DF', background: 'transparent' }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(11,166,223,0.08)')}
-            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-          >
-            + Add Category
-          </button>
-
+          <button onClick={() => setBudgetItems([...budgetItems, { category: '', amount: '' }])} className="flex items-center gap-1 text-[#0BA6DF] text-xs font-bold px-[14px] py-2 rounded-[9px] transition-colors" style={{ border: '1.5px solid #0BA6DF', background: 'transparent' }} onMouseEnter={e => (e.currentTarget.style.background = 'rgba(11,166,223,0.08)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>+ Add Category</button>
           <div className="flex justify-between items-center py-3 mt-2" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
             <span className="text-[#9ca3af] text-sm">Total Budget</span>
-            <span className="text-[#EF7722] text-base font-bold">
-              ₱{totalBudget.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
-            </span>
+            <span className="text-[#EF7722] text-base font-bold">₱{totalBudget.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</span>
           </div>
 
-          {/* PLACES */}
           <ModalDivider />
           <ModalSectionLabel>PLACES TO EXPLORE</ModalSectionLabel>
-
           {places.map((item, index) => (
             <div key={index} className="flex items-center gap-2 mb-2">
-              <div className="w-6 h-6 rounded-[6px] flex items-center justify-center text-[11px] font-bold flex-shrink-0"
-                style={{ background: 'rgba(11,166,223,0.15)', color: '#0BA6DF' }}>
-                {index + 1}
-              </div>
-              <input type="text" placeholder="Place name" value={item.name}
-                onChange={e => { const u = [...places]; u[index].name = e.target.value; setPlaces(u); }}
-                className={darkInput} />
+              <div className="w-6 h-6 rounded-[6px] flex items-center justify-center text-[11px] font-bold flex-shrink-0" style={{ background: 'rgba(11,166,223,0.15)', color: '#0BA6DF' }}>{index + 1}</div>
+              <input type="text" placeholder="Place name" value={item.name} onChange={e => { const u = [...places]; u[index].name = e.target.value; setPlaces(u); }} className={darkInput} />
             </div>
           ))}
+          <button onClick={() => setPlaces([...places, { name: '' }])} className="flex items-center gap-1 text-[#0BA6DF] text-xs font-bold px-[14px] py-2 rounded-[9px] transition-colors" style={{ border: '1.5px solid #0BA6DF', background: 'transparent' }} onMouseEnter={e => (e.currentTarget.style.background = 'rgba(11,166,223,0.08)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>+ Add Place</button>
 
-          <button
-            onClick={() => setPlaces([...places, { name: '' }])}
-            className="flex items-center gap-1 text-[#0BA6DF] text-xs font-bold px-[14px] py-2 rounded-[9px] transition-colors"
-            style={{ border: '1.5px solid #0BA6DF', background: 'transparent' }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(11,166,223,0.08)')}
-            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-          >
-            + Add Place
-          </button>
-
-          {/* CHECKLIST */}
           <ModalDivider />
           <ModalSectionLabel>PACKING CHECKLIST</ModalSectionLabel>
-
           {checklistItems.map((item, index) => (
             <div key={index} className="flex items-center gap-3 mb-2">
               <div className="w-4 h-4 rounded flex-shrink-0" style={{ border: '1.5px solid #EF7722', background: 'transparent' }} />
-              <input type="text" placeholder="Item name" value={item.name}
-                onChange={e => { const u = [...checklistItems]; u[index].name = e.target.value; setChecklistItems(u); }}
-                className={darkInput} />
+              <input type="text" placeholder="Item name" value={item.name} onChange={e => { const u = [...checklistItems]; u[index].name = e.target.value; setChecklistItems(u); }} className={darkInput} />
             </div>
           ))}
-
-          <button
-            onClick={() => setChecklistItems([...checklistItems, { name: '' }])}
-            className="flex items-center gap-1 text-[#0BA6DF] text-xs font-bold px-[14px] py-2 rounded-[9px] transition-colors"
-            style={{ border: '1.5px solid #0BA6DF', background: 'transparent' }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(11,166,223,0.08)')}
-            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-          >
-            + Add Item
-          </button>
-
+          <button onClick={() => setChecklistItems([...checklistItems, { name: '' }])} className="flex items-center gap-1 text-[#0BA6DF] text-xs font-bold px-[14px] py-2 rounded-[9px] transition-colors" style={{ border: '1.5px solid #0BA6DF', background: 'transparent' }} onMouseEnter={e => (e.currentTarget.style.background = 'rgba(11,166,223,0.08)')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>+ Add Item</button>
           <div className="h-2" />
         </div>
 
-        {/* Footer */}
-        <div
-          className="flex-shrink-0 flex justify-between items-center px-6 py-4 rounded-b-2xl"
-          style={{ borderTop: '1px solid rgba(255,255,255,0.08)', background: '#1a2332' }}
-        >
-          <button
-            onClick={onClose}
-            className="px-6 py-[10px] rounded-[10px] text-[#9ca3af] text-[13.5px] font-medium transition-all"
-            style={{ border: '1.5px solid rgba(255,255,255,0.15)', background: 'transparent' }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)'; e.currentTarget.style.color = '#e5e7eb'; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'; e.currentTarget.style.color = '#9ca3af'; }}
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleSubmit}
-            disabled={loading}
-            className="px-7 py-[10px] rounded-[10px] text-white text-[13.5px] font-bold transition-all disabled:opacity-50"
-            style={{ background: '#EF7722' }}
-            onMouseEnter={e => { if (!loading) e.currentTarget.style.background = '#e06b18'; }}
-            onMouseLeave={e => { if (!loading) e.currentTarget.style.background = '#EF7722'; }}
-          >
-            {loading ? 'Saving...' : 'Save Changes'}
-          </button>
+        <div className="flex-shrink-0 flex justify-between items-center px-6 py-4 rounded-b-2xl" style={{ borderTop: '1px solid rgba(255,255,255,0.08)', background: '#1a2332' }}>
+          <button onClick={onClose} className="px-6 py-[10px] rounded-[10px] text-[#9ca3af] text-[13.5px] font-medium transition-all" style={{ border: '1.5px solid rgba(255,255,255,0.15)', background: 'transparent' }} onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)'; e.currentTarget.style.color = '#e5e7eb'; }} onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'; e.currentTarget.style.color = '#9ca3af'; }}>Cancel</button>
+          <button onClick={handleSubmit} disabled={loading} className="px-7 py-[10px] rounded-[10px] text-white text-[13.5px] font-bold transition-all disabled:opacity-50" style={{ background: '#EF7722' }} onMouseEnter={e => { if (!loading) e.currentTarget.style.background = '#e06b18'; }} onMouseLeave={e => { if (!loading) e.currentTarget.style.background = '#EF7722'; }}>{loading ? 'Saving...' : 'Save Changes'}</button>
         </div>
       </div>
     </div>
   );
 }
 
-/* ── Shared modal helpers ── */
 function ModalSectionLabel({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex items-center gap-2 mb-3">
-      <span className="text-[11px] font-bold tracking-[0.1em]" style={{ color: '#EF7722' }}>
-        {children}
-      </span>
+      <span className="text-[11px] font-bold tracking-[0.1em]" style={{ color: '#EF7722' }}>{children}</span>
       <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.06)' }} />
     </div>
   );
