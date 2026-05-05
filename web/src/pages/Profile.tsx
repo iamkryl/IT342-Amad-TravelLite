@@ -146,12 +146,22 @@ export default function Profile() {
     <div className="min-h-screen" style={{ background: 'linear-gradient(145deg, #eef0f4 0%, #e4e8ee 50%, #dde3eb 100%)' }}>
       {/* Navbar */}
       <div className="bg-[#1F2937] px-8 py-3 flex justify-between items-center shadow-lg sticky top-0 z-40">
+        <div className="flex items-center gap-4">
+        <button
+            onClick={() => navigate(-1)}
+            className="text-gray-400 hover:text-white transition-colors p-1.5 rounded-lg hover:bg-white hover:bg-opacity-10"
+        >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+        </button>
         <div className="flex items-center gap-3">
-          <img src={require('../assets/travellite.png')} alt="TravelLite" className="h-10 w-10 object-contain drop-shadow-md" />
-          <div>
+            <img src={require('../assets/travellite.png')} alt="TravelLite" className="h-10 w-10 object-contain drop-shadow-md" />
+            <div>
             <p className="text-white font-bold text-lg leading-none tracking-tight">TravelLite</p>
             <p className="text-gray-400 text-xs tracking-wide">Trip Planning Dashboard</p>
-          </div>
+            </div>
+        </div>
         </div>
         <div className="flex items-center gap-4">
           <span className="text-gray-300 text-sm font-medium">{profile.firstName} {profile.lastName}</span>
@@ -178,16 +188,6 @@ export default function Profile() {
 
       {/* Content */}
       <div className="max-w-2xl mx-auto px-6 py-10">
-
-        <button
-          onClick={() => window.location.href = '/dashboard'}
-          className="flex items-center gap-2 text-gray-400 text-sm mb-6 hover:text-[#EF7722] transition-colors duration-200 group"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 group-hover:-translate-x-1 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
-          Back to Dashboard
-        </button>
 
         <h2 className="text-2xl font-black text-[#111827] mb-6 tracking-tight">Profile Settings</h2>
 

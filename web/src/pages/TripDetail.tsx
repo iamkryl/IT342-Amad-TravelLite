@@ -187,7 +187,10 @@ export default function TripDetail() {
           </button>
           <div className="flex items-center gap-3">
             <img src={logo} alt="TravelLite" className="h-10 w-10 object-contain drop-shadow-md" />
-            <p className="text-white font-bold text-lg tracking-tight">TravelLite</p>
+            <div>
+            <p className="text-white font-bold text-lg leading-none tracking-tight">TravelLite</p>
+            <p className="text-gray-400 text-xs tracking-wide">Trip Planning Dashboard</p>
+          </div>
           </div>
         </div>
         <div className="flex items-center gap-4">
