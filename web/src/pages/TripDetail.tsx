@@ -121,10 +121,26 @@ export default function TripDetail() {
     }
   };
 
-  const handleChecklistToggle = (itemId: number) => {
+  const handleChecklistToggle = async (itemId: number) => {
+    const item = checklist.find(i => i.itemId === itemId);
+    if (!item) return;
+    const newValue = !item.isChecked;
     setChecklist(prev =>
-      prev.map(item => item.itemId === itemId ? { ...item, isChecked: !item.isChecked } : item)
+      prev.map(i => i.itemId === itemId ? { ...i, isChecked: newValue } : i)
     );
+    try {
+      await axios.patch(
+        `http://localhost:8080/api/v1/trips/${id}/checklist/${itemId}`,
+        { isChecked: newValue },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+    } catch (err) {
+      console.error('Failed to update checklist item', err);
+      // Revert on failure
+      setChecklist(prev =>
+        prev.map(i => i.itemId === itemId ? { ...i, isChecked: !newValue } : i)
+      );
+    }
   };
 
   const handleLogout = () => {

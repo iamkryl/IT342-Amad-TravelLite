@@ -120,6 +120,12 @@ public class TripService {
                 .stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
+    public void toggleChecklistItem(Integer itemId, boolean isChecked) {
+        ChecklistItem item = checklistItemRepository.findById(itemId)
+                .orElseThrow(() -> new RuntimeException("Checklist item not found"));
+        item.setIsChecked(isChecked);
+        checklistItemRepository.save(item);
+    }
     private TripResponse mapToResponse(Trip trip) {
         TripResponse response = new TripResponse();
         response.setTripId(trip.getTripId());

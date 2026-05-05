@@ -13,6 +13,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import edu.cit.amad.travellite.repository.UserRepository;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.HashMap;
 import java.util.List;
@@ -20,7 +21,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:3000", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.PATCH})
 public class TripController {
 
     @Autowired private TripService tripService;
@@ -127,6 +128,21 @@ public class TripController {
         response.put("data", weather);
         response.put("error", weather == null
                 ? Map.of("message", "Weather information unavailable") : null);
+        response.put("timestamp", java.time.LocalDateTime.now().toString());
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/trips/{id}/checklist/{itemId}")
+    public ResponseEntity<?> toggleChecklistItem(
+            @PathVariable Integer id,
+            @PathVariable Integer itemId,
+            @RequestBody Map<String, Boolean> body) {
+        boolean isChecked = body.getOrDefault("isChecked", false);
+        tripService.toggleChecklistItem(itemId, isChecked);
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("data", null);
+        response.put("error", null);
         response.put("timestamp", java.time.LocalDateTime.now().toString());
         return ResponseEntity.ok(response);
     }
