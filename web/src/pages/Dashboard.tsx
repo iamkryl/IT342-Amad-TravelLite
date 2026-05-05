@@ -37,24 +37,31 @@ export default function Dashboard() {
   const [showUpcomingModal, setShowUpcomingModal] = useState(false);
   const [upcomingTrips, setUpcomingTrips] = useState<Trip[]>([]);
   const [upcomingLoading, setUpcomingLoading] = useState(false);
+  const [companionTrips, setCompanionTrips] = useState<Trip[]>([]);
 
   useEffect(() => {
-    fetchDashboard();
-    fetchTrips();
-    fetchProfile();
-  }, []);
-
+  fetchDashboard();
+  fetchTrips();
+  fetchProfile();
+  fetchCompanionTrips();
+}, []);
+  
   const fetchProfile = async () => {
-    try {
-      const res = await axios.get('http://localhost:8080/api/v1/users/me', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = res.data.data;
-      setUser((prev: any) => ({ ...prev, photo_url: data.photoUrl }));
-    } catch (err) {
-      console.error('Failed to fetch profile', err);
-    }
-  };
+  try {
+    const res = await axios.get('http://localhost:8080/api/v1/users/me', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = res.data.data;
+    setUser((prev: any) => ({
+      ...prev,
+      photo_url: data.photoUrl,
+      first_name: data.firstName,
+      last_name: data.lastName,
+    }));
+  } catch (err) {
+    console.error('Failed to fetch profile', err);
+  }
+};
 
   const fetchDashboard = async () => {
     try {
@@ -79,6 +86,17 @@ export default function Dashboard() {
       setLoading(false);
     }
   };
+
+  const fetchCompanionTrips = async () => {
+  try {
+    const res = await axios.get('http://localhost:8080/api/v1/trips/companion', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    setCompanionTrips(res.data.data);
+  } catch (err) {
+    console.error('Failed to fetch companion trips', err);
+  }
+};
 
   const fetchUpcomingTrips = async () => {
     setUpcomingLoading(true);
@@ -240,7 +258,7 @@ export default function Dashboard() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
               </svg>
             </div>
-            <h2 className="text-base font-black text-[#111827] tracking-tight">Your Recent Trips</h2>
+            <h2 className="text-base font-black text-[#111827] tracking-tight">Your Planned Trips</h2>
             <span className="bg-orange-50 text-[#EF7722] text-xs font-bold px-2.5 py-1 rounded-lg border border-orange-100">
               {trips.length} trips
             </span>
@@ -282,7 +300,12 @@ export default function Dashboard() {
                   <tr
                     key={trip.tripId}
                     onClick={() => navigate(`/trips/${trip.tripId}`)}
-                    className={`cursor-pointer hover:bg-orange-50 transition-all duration-150 group ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'}`}
+                    className={`cursor-pointer transition-all duration-150 group ${
+                    new Date(new Date().getTime() + 8 * 60 * 60 * 1000).toISOString().split('T')[0] >= trip.startDate &&
+                    new Date(new Date().getTime() + 8 * 60 * 60 * 1000).toISOString().split('T')[0] <= trip.endDate
+                      ? 'bg-orange-50 border-l-4 border-[#EF7722] hover:bg-orange-100'
+                      : index % 2 === 0 ? 'bg-white hover:bg-orange-50' : 'bg-gray-50/30 hover:bg-orange-50'
+                  }`}
                   >
                     <td className="px-6 py-4 text-gray-400 text-sm">{formatDate(trip.startDate, trip.endDate)}</td>
                     <td className="px-6 py-4">
@@ -315,6 +338,77 @@ export default function Dashboard() {
             </table>
           )}
         </div>
+
+        {/* Companion Trips */}
+        {companionTrips.length > 0 && (
+          <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/60 border border-gray-100/80 overflow-hidden mt-5">
+            <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, #0BA6DF 0%, #0891c2 60%, #EF7722 100%)' }} />
+            <div className="px-6 py-5 flex items-center gap-3" style={{ borderBottom: '1px solid #f3f4f6' }}>
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'rgba(11,166,223,0.1)' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-[#0BA6DF]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </div>
+              <h2 className="text-base font-black text-[#111827] tracking-tight">You're Invited To</h2>
+              <span className="bg-blue-50 text-[#0BA6DF] text-xs font-bold px-2.5 py-1 rounded-lg border border-blue-100">
+                {companionTrips.length} trips
+              </span>
+            </div>
+            <table className="w-full text-sm">
+              <thead>
+                <tr style={{ background: 'linear-gradient(90deg, #1F2937 0%, #374151 100%)' }}>
+                  <th className="px-6 py-4 text-left font-bold text-xs uppercase tracking-widest text-gray-300">Date</th>
+                  <th className="px-6 py-4 text-left font-bold text-xs uppercase tracking-widest text-gray-300">Trip Title</th>
+                  <th className="px-6 py-4 text-left font-bold text-xs uppercase tracking-widest text-gray-300">Budget</th>
+                  <th className="px-6 py-4 text-left font-bold text-xs uppercase tracking-widest text-gray-300">From</th>
+                  <th className="px-6 py-4 text-left font-bold text-xs uppercase tracking-widest text-gray-300">Destination</th>
+                  <th className="px-6 py-4 text-left font-bold text-xs uppercase tracking-widest text-gray-300">Duration</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {companionTrips.map((trip, index) => (
+                  <tr
+                    key={trip.tripId}
+                    onClick={() => navigate(`/trips/${trip.tripId}`)}
+                    className={`cursor-pointer transition-all duration-150 group ${
+                    new Date(new Date().getTime() + 8 * 60 * 60 * 1000).toISOString().split('T')[0] >= trip.startDate &&
+                    new Date(new Date().getTime() + 8 * 60 * 60 * 1000).toISOString().split('T')[0] <= trip.endDate
+                      ? 'bg-blue-50 border-l-4 border-[#0BA6DF] hover:bg-blue-100'
+                      : index % 2 === 0 ? 'bg-white hover:bg-blue-50' : 'bg-gray-50/30 hover:bg-blue-50'
+                  }`}
+                  >
+                    <td className="px-6 py-4 text-gray-400 text-sm">{formatDate(trip.startDate, trip.endDate)}</td>
+                    <td className="px-6 py-4">
+                      <span className="font-bold text-[#111827] group-hover:text-[#0BA6DF] transition-colors">
+                        {trip.title}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="font-bold px-3 py-1.5 rounded-lg text-xs border border-orange-100 text-[#EF7722]" style={{ background: 'rgba(239,119,34,0.08)' }}>
+                        ₱{Number(trip.totalExpenses).toLocaleString()}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-gray-500 text-sm">{trip.origin}</td>
+                    <td className="px-6 py-4">
+                      <span className="font-bold px-3 py-1.5 rounded-lg text-xs border border-blue-100 text-[#0BA6DF]" style={{ background: 'rgba(11,166,223,0.08)' }}>
+                        {trip.destination}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="text-gray-500 flex items-center gap-1.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        {trip.duration} days
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
       </div>
 
       {showPlanModal && (
@@ -565,7 +659,7 @@ function PlanTripModal({
           budgetItems: budgetItems.filter((b) => b.category && b.amount),
           places: places.filter((p) => p.name),
           checklistItems: checklistItems.filter((c) => c.name),
-          companions: companions.map((email) => ({ email })),
+          companions: companions.map(email => ({ email })),
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );

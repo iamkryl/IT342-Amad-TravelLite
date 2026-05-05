@@ -32,7 +32,10 @@ public class TripService {
         return tripRepository.findByUserUserId(userId)
                 .stream().map(this::mapToResponse).collect(Collectors.toList());
     }
-
+    public List<TripResponse> getCompanionTrips(Long userId) {
+        return tripRepository.findCompanionTripsByUserId(userId)
+                .stream().map(this::mapToResponse).collect(Collectors.toList());
+    }
     public TripResponse getTripById(Integer tripId) {
         Trip trip = tripRepository.findById(tripId)
                 .orElseThrow(() -> new RuntimeException("Trip not found"));
@@ -107,17 +110,22 @@ public class TripService {
         }
 
         List<Trip> upcoming = tripRepository.findByUserUserIdAndStartDateAfter(userId, LocalDate.now());
+        List<Trip> companionUpcoming = tripRepository.findCompanionUpcomingTripsByUserId(userId, LocalDate.now());
 
         DashboardResponse response = new DashboardResponse();
         response.setTotalTrips(trips.size());
         response.setOverallExpense(totalExpense);
-        response.setUpcomingTravelsCount(upcoming.size());
+        response.setUpcomingTravelsCount(upcoming.size() + companionUpcoming.size());
         return response;
     }
 
     public List<TripResponse> getUpcomingTrips(Long userId) {
-        return tripRepository.findByUserUserIdAndStartDateAfter(userId, LocalDate.now())
-                .stream().map(this::mapToResponse).collect(Collectors.toList());
+        List<Trip> ownUpcoming = tripRepository.findByUserUserIdAndStartDateAfter(userId, LocalDate.now());
+        List<Trip> companionUpcoming = tripRepository.findCompanionUpcomingTripsByUserId(userId, LocalDate.now());
+        List<Trip> all = new java.util.ArrayList<>();
+        all.addAll(ownUpcoming);
+        all.addAll(companionUpcoming);
+        return all.stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
     public void toggleChecklistItem(Integer itemId, boolean isChecked) {
@@ -126,7 +134,8 @@ public class TripService {
         item.setIsChecked(isChecked);
         checklistItemRepository.save(item);
     }
-    private TripResponse mapToResponse(Trip trip) {
+    private TripResponse mapToResponse
+            (Trip trip) {
         TripResponse response = new TripResponse();
         response.setTripId(trip.getTripId());
         response.setTitle(trip.getTitle());
@@ -135,6 +144,7 @@ public class TripService {
         response.setStartDate(trip.getStartDate());
         response.setEndDate(trip.getEndDate());
         response.setCreatedAt(trip.getCreatedAt());
+        response.setCreatedBy(trip.getUser().getUserId());
 
         if (trip.getStartDate() != null && trip.getEndDate() != null) {
             response.setDuration(ChronoUnit.DAYS.between(trip.getStartDate(), trip.getEndDate()));
