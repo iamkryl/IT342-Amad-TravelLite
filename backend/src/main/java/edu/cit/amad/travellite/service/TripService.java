@@ -110,17 +110,22 @@ public class TripService {
         }
 
         List<Trip> upcoming = tripRepository.findByUserUserIdAndStartDateAfter(userId, LocalDate.now());
+        List<Trip> companionUpcoming = tripRepository.findCompanionUpcomingTripsByUserId(userId, LocalDate.now());
 
         DashboardResponse response = new DashboardResponse();
         response.setTotalTrips(trips.size());
         response.setOverallExpense(totalExpense);
-        response.setUpcomingTravelsCount(upcoming.size());
+        response.setUpcomingTravelsCount(upcoming.size() + companionUpcoming.size());
         return response;
     }
 
     public List<TripResponse> getUpcomingTrips(Long userId) {
-        return tripRepository.findByUserUserIdAndStartDateAfter(userId, LocalDate.now())
-                .stream().map(this::mapToResponse).collect(Collectors.toList());
+        List<Trip> ownUpcoming = tripRepository.findByUserUserIdAndStartDateAfter(userId, LocalDate.now());
+        List<Trip> companionUpcoming = tripRepository.findCompanionUpcomingTripsByUserId(userId, LocalDate.now());
+        List<Trip> all = new java.util.ArrayList<>();
+        all.addAll(ownUpcoming);
+        all.addAll(companionUpcoming);
+        return all.stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
     public void toggleChecklistItem(Integer itemId, boolean isChecked) {
