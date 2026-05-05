@@ -258,7 +258,7 @@ export default function Dashboard() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
               </svg>
             </div>
-            <h2 className="text-base font-black text-[#111827] tracking-tight">Your Recent Trips</h2>
+            <h2 className="text-base font-black text-[#111827] tracking-tight">Your Planned Trips</h2>
             <span className="bg-orange-50 text-[#EF7722] text-xs font-bold px-2.5 py-1 rounded-lg border border-orange-100">
               {trips.length} trips
             </span>
@@ -300,7 +300,12 @@ export default function Dashboard() {
                   <tr
                     key={trip.tripId}
                     onClick={() => navigate(`/trips/${trip.tripId}`)}
-                    className={`cursor-pointer hover:bg-orange-50 transition-all duration-150 group ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'}`}
+                    className={`cursor-pointer transition-all duration-150 group ${
+                    new Date(new Date().getTime() + 8 * 60 * 60 * 1000).toISOString().split('T')[0] >= trip.startDate &&
+                    new Date(new Date().getTime() + 8 * 60 * 60 * 1000).toISOString().split('T')[0] <= trip.endDate
+                      ? 'bg-orange-50 border-l-4 border-[#EF7722] hover:bg-orange-100'
+                      : index % 2 === 0 ? 'bg-white hover:bg-orange-50' : 'bg-gray-50/30 hover:bg-orange-50'
+                  }`}
                   >
                     <td className="px-6 py-4 text-gray-400 text-sm">{formatDate(trip.startDate, trip.endDate)}</td>
                     <td className="px-6 py-4">
@@ -344,7 +349,7 @@ export default function Dashboard() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
               </div>
-              <h2 className="text-base font-black text-[#111827] tracking-tight">Trips I'm Part Of</h2>
+              <h2 className="text-base font-black text-[#111827] tracking-tight">You're Invited To</h2>
               <span className="bg-blue-50 text-[#0BA6DF] text-xs font-bold px-2.5 py-1 rounded-lg border border-blue-100">
                 {companionTrips.length} trips
               </span>
@@ -365,7 +370,12 @@ export default function Dashboard() {
                   <tr
                     key={trip.tripId}
                     onClick={() => navigate(`/trips/${trip.tripId}`)}
-                    className={`cursor-pointer hover:bg-blue-50 transition-all duration-150 group ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'}`}
+                    className={`cursor-pointer transition-all duration-150 group ${
+                    new Date(new Date().getTime() + 8 * 60 * 60 * 1000).toISOString().split('T')[0] >= trip.startDate &&
+                    new Date(new Date().getTime() + 8 * 60 * 60 * 1000).toISOString().split('T')[0] <= trip.endDate
+                      ? 'bg-blue-50 border-l-4 border-[#0BA6DF] hover:bg-blue-100'
+                      : index % 2 === 0 ? 'bg-white hover:bg-blue-50' : 'bg-gray-50/30 hover:bg-blue-50'
+                  }`}
                   >
                     <td className="px-6 py-4 text-gray-400 text-sm">{formatDate(trip.startDate, trip.endDate)}</td>
                     <td className="px-6 py-4">

@@ -18,8 +18,14 @@ export default function Login() {
     try {
       const res = await loginUser({ email, password });
       if (res.data.success) {
+        console.log('user data:', res.data.data.user);
         localStorage.setItem('token', res.data.data.accessToken);
-        localStorage.setItem('user', JSON.stringify(res.data.data.user));
+        localStorage.setItem('user', JSON.stringify({
+        id: res.data.data.user.userId,
+        first_name: res.data.data.user.firstName,
+        last_name: res.data.data.user.lastName,
+        email: res.data.data.user.email,
+}));
         navigate('/dashboard');
       }
     } catch (err: any) {
