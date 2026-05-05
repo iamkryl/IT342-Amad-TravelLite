@@ -534,7 +534,7 @@ function PlanTripModal({
           budgetItems: budgetItems.filter((b) => b.category && b.amount),
           places: places.filter((p) => p.name),
           checklistItems: checklistItems.filter((c) => c.name),
-          companions: companions.map((email) => ({ email })),
+          companions: companions.map(email => ({ email })),
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
