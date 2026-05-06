@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import logo from '../assets/travellite.png';
-import PlaceAutocomplete from '../components/PlaceAutocomplete';
+import logo from '../../assets/travellite.png';
+import PlaceAutocomplete from '../shared/PlaceAutocomplete';
 
 interface DashboardData {
   totalTrips: number;
@@ -849,7 +849,7 @@ function PlanTripModal({
             <div className="flex-1">
               <PlaceAutocomplete
                 value={item.name}
-                onChange={(val) => { const u = [...places]; u[index].name = val; setPlaces(u); }}
+               onChange={(val: string) => { const u = [...places]; u[index].name = val; setPlaces(u); }}
                 placeholder="Search a place..."
                 destinationBias={destination}
               />

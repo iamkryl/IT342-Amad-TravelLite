@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getProfile, updateProfile, uploadPhoto } from '../api';
+import { getProfile, updateProfile, uploadPhoto } from '../../api';
 import ReactCrop, { Crop, centerCrop, makeAspectCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 
@@ -180,7 +180,7 @@ export default function Profile() {
         </svg>
         </button>
         <div className="flex items-center gap-3">
-            <img src={require('../assets/travellite.png')} alt="TravelLite" className="h-10 w-10 object-contain drop-shadow-md" />
+            <img src={require('../../assets/travellite.png')} alt="TravelLite" className="h-10 w-10 object-contain drop-shadow-md" />
             <div>
             <p className="text-white font-bold text-lg leading-none tracking-tight">TravelLite</p>
             <p className="text-gray-400 text-xs tracking-wide">Trip Planning Dashboard</p>

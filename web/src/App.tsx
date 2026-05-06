@@ -1,11 +1,11 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
-import TripDetail from './pages/TripDetail';
-import OAuth2Callback from './pages/OAuth2Callback';
-import Profile from './pages/Profile';
+import Login from './features/auth/Login';
+import Register from './features/auth/Register';
+import Dashboard from './features/trip/Dashboard';
+import TripDetail from './features/trip/TripDetail';
+import OAuth2Callback from './features/auth/OAuth2Callback';
+import Profile from './features/user/Profile';
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const token = localStorage.getItem('token');
