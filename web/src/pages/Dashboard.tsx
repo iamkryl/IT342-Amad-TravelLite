@@ -645,6 +645,14 @@ function PlanTripModal({
       setError('End date must be after start date.');
       return;
     }
+    const filledBudget = budgetItems.filter(b => b.category || b.amount);
+    const invalidBudget = filledBudget.some(
+      b => !b.category || !b.amount || parseFloat(b.amount) <= 0
+    );
+    if (invalidBudget) {
+      setError('Each budget item must have a category and an amount greater than 0.');
+      return;
+    }
     setLoading(true);
     setError('');
     try {

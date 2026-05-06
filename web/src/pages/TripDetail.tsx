@@ -736,6 +736,14 @@ function EditTripModal({
       setError('End date must be after start date.');
       return;
     }
+    const filledBudget = budgetItems.filter(b => b.category || b.amount);
+    const invalidBudget = filledBudget.some(
+      b => !b.category || !b.amount || parseFloat(b.amount) <= 0
+    );
+    if (invalidBudget) {
+      setError('Each budget item must have a category and an amount greater than 0.');
+      return;
+    }
     setLoading(true);
     setError('');
     try {
@@ -743,7 +751,7 @@ function EditTripModal({
         `http://localhost:8080/api/v1/trips/${trip.tripId}`,
         {
           title, origin, destination, startDate, endDate,
-          budgetItems: budgetItems.filter(b => b.category && b.amount),
+          budgetItems: budgetItems.filter(b => b.category && b.amount && parseFloat(b.amount) > 0),
           places: places.filter(p => p.name),
           checklistItems: checklistItems.filter(c => c.name),
           companions: companions.map(email => ({ email })),
