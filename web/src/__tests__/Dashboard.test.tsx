@@ -1,25 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-
-jest.mock('axios', () => ({
-  get: jest.fn(() => Promise.resolve({
-    data: {
-      data: {
-        totalTrips: 5,
-        overallExpense: 10000,
-        upcomingTravelsCount: 2,
-        firstName: 'Test',
-        lastName: 'User',
-        photoUrl: null,
-        data: []
-      }
-    }
-  })),
-  post: jest.fn(() => Promise.resolve({ data: { data: [] } })),
-  patch: jest.fn(() => Promise.resolve({ data: {} })),
-  create: jest.fn(),
-  defaults: { headers: { common: {} } }
-}));
+import Dashboard from '../features/trip/Dashboard';
 
 beforeEach(() => {
   Storage.prototype.getItem = jest.fn((key) => {
@@ -31,8 +12,6 @@ beforeEach(() => {
     return null;
   });
 });
-
-import Dashboard from '../features/trip/Dashboard';
 
 describe('Dashboard Page', () => {
   test('renders welcome message', () => {
