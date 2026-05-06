@@ -80,6 +80,15 @@ public class AuthService {
         }
 
         User user = userRepository.findByEmail(request.getEmail()).orElseThrow();
+
+        if (!user.getIsActive()) {
+            Map<String, String> error = new HashMap<>();
+            error.put("code", "AUTH-003");
+            error.put("message", "Your account has been suspended. Please contact the administrator.");
+            return new AuthResponse(false, null, error,
+                    LocalDateTime.now().toString());
+        }
+
         String token = jwtUtil.generateToken(user.getEmail());
 
         Map<String, Object> data = new HashMap<>();
