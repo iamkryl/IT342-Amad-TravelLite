@@ -25,8 +25,14 @@ export default function Login() {
         first_name: res.data.data.user.firstName,
         last_name: res.data.data.user.lastName,
         email: res.data.data.user.email,
+        role: res.data.data.user.role,
       }));
-      navigate('/dashboard');
+      const role = res.data.data.user.role;
+      if (role === 'ADMIN') {
+        navigate('/admin');
+      } else {
+        navigate('/dashboard');
+}
     } else {
       setError('Invalid email or password.');
     }

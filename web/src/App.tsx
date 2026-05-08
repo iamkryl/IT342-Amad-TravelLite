@@ -6,10 +6,21 @@ import Dashboard from './features/trip/Dashboard';
 import TripDetail from './features/trip/TripDetail';
 import OAuth2Callback from './features/auth/OAuth2Callback';
 import Profile from './features/user/Profile';
+import AdminDashboard from './features/admin/AdminDashboard';
+import UserManagement from './features/admin/UserManagement';
+import TripManagement from './features/admin/TripManagement';
+import AdminProfile from './features/admin/AdminProfile';
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const token = localStorage.getItem('token');
   return token ? <>{children}</> : <Navigate to="/login" />;
+}
+
+function AdminRoute({ children }: { children: React.ReactNode }) {
+  const token = localStorage.getItem('token');
+  const user = localStorage.getItem('user');
+  if (!token) return <Navigate to="/login" />;
+  return <>{children}</>;
 }
 
 export default function App() {
@@ -23,6 +34,10 @@ export default function App() {
         <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
         <Route path="/trips/:id" element={<PrivateRoute><TripDetail /></PrivateRoute>} />
         <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
+        <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+        <Route path="/admin/users" element={<AdminRoute><UserManagement /></AdminRoute>} />
+        <Route path="/admin/trips" element={<AdminRoute><TripManagement /></AdminRoute>} />
+        <Route path="/admin/profile" element={<AdminRoute><AdminProfile /></AdminRoute>} />
       </Routes>
     </Router>
   );

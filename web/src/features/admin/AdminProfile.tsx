@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { getProfile, updateProfile, uploadPhoto } from '../../api';
 import ReactCrop, { Crop, centerCrop, makeAspectCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
+import AdminLayout from './AdminLayout';
 
-export default function Profile() {
+export default function AdminProfile() {
   const navigate = useNavigate();
   const [profile, setProfile] = useState({
     firstName: '',
@@ -28,18 +29,18 @@ export default function Profile() {
   const imgRef = useRef<HTMLImageElement>(null);
   const [editingInfo, setEditingInfo] = useState(false);
   const [showLeaveDialog, setShowLeaveDialog] = useState(false);
-  const [pendingNavigation, setPendingNavigation] = useState(false);
+  const [photoTimestamp, setPhotoTimestamp] = useState(Date.now());
 
-    useEffect(() => {
+  useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-        if (editingInfo || showPasswordFields) {
+      if (editingInfo || showPasswordFields) {
         e.preventDefault();
         e.returnValue = '';
-        }
+      }
     };
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-    }, [editingInfo, showPasswordFields]);
+  }, [editingInfo, showPasswordFields]);
 
   useEffect(() => {
     getProfile().then((res) => {
@@ -108,8 +109,7 @@ export default function Profile() {
     const { width, height } = e.currentTarget;
     const initialCrop = centerCrop(
       makeAspectCrop({ unit: '%', width: 80 }, 1, width, height),
-      width,
-      height
+      width, height
     );
     setCrop(initialCrop);
     setCompletedCrop(initialCrop);
@@ -142,13 +142,11 @@ export default function Profile() {
         const res = await uploadPhoto(file);
         const newPhotoUrl = res.data.data.photoUrl;
         setProfile((prev) => ({ ...prev, photoUrl: newPhotoUrl }));
+        setPhotoTimestamp(Date.now());
         setMessage('Photo uploaded successfully.');
         const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
-        localStorage.setItem('user', JSON.stringify({
-        ...currentUser,
-        photo_url: newPhotoUrl,
-      }));
-      window.dispatchEvent(new Event('userUpdated'));
+        localStorage.setItem('user', JSON.stringify({ ...currentUser, photo_url: newPhotoUrl }));
+        window.dispatchEvent(new Event('userUpdated'));
       } catch {
         setError('Failed to upload photo.');
       } finally {
@@ -157,64 +155,12 @@ export default function Profile() {
     }, 'image/jpeg', 0.9);
   };
 
-  const getInitials = () => {
-    return `${profile.firstName?.charAt(0) || ''}${profile.lastName?.charAt(0) || ''}`.toUpperCase();
-  };
+  const getInitials = () =>
+    `${profile.firstName?.charAt(0) || ''}${profile.lastName?.charAt(0) || ''}`.toUpperCase();
 
   return (
-    <div className="min-h-screen" style={{ background: 'linear-gradient(145deg, #eef0f4 0%, #e4e8ee 50%, #dde3eb 100%)' }}>
-      {/* Navbar */}
-      <div className="bg-[#1F2937] px-8 py-3 flex justify-between items-center shadow-lg sticky top-0 z-40">
-        <div className="flex items-center gap-4">
-       <button
-        type="button"
-        onClick={() => {
-        if (editingInfo || showPasswordFields) {
-            setShowLeaveDialog(true);
-        } else {
-            navigate(-1);
-        }
-        }}
-        className="text-gray-400 hover:text-white transition-colors p-1.5 rounded-lg hover:bg-white hover:bg-opacity-10"
-        >
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-        </button>
-        <div className="flex items-center gap-3">
-            <img src={require('../../assets/travellite.png')} alt="TravelLite" className="h-10 w-10 object-contain drop-shadow-md" />
-            <div>
-            <p className="text-white font-bold text-lg leading-none tracking-tight">TravelLite</p>
-            <p className="text-gray-400 text-xs tracking-wide">Trip Planning Dashboard</p>
-            </div>
-        </div>
-        </div>
-        <div className="flex items-center gap-4">
-          <span className="text-gray-300 text-sm font-medium">{profile.firstName} {profile.lastName}</span>
-          <div className="rounded-full w-9 h-9 overflow-hidden shadow-md ring-2 ring-green-400 ring-opacity-30 flex items-center justify-center bg-gradient-to-br from-[#10B981] to-[#059669]">
-            {profile.photoUrl ? (
-           <img src={`http://localhost:8080${profile.photoUrl}?t=${Date.now()}`} alt="avatar" className="w-9 h-9 object-cover" />
-            ) : (
-                <span className="text-white text-sm font-bold">{getInitials()}</span>
-            )}
-            </div>
-          <button className="text-[#EF7722] p-1.5 rounded-lg bg-white bg-opacity-10 cursor-default">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            </button>
-          <button onClick={() => { localStorage.removeItem('token'); localStorage.removeItem('user'); navigate('/login'); }} className="text-gray-400 hover:text-red-400 transition-colors p-1.5 rounded-lg hover:bg-red-400 hover:bg-opacity-10">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
-          </button>
-        </div>
-      </div>
-
-      {/* Content */}
+    <AdminLayout>
       <div className="max-w-2xl mx-auto px-6 py-10">
-
         <h2 className="text-2xl font-black text-[#111827] mb-6 tracking-tight">Profile Settings</h2>
 
         {message && (
@@ -241,8 +187,8 @@ export default function Profile() {
             <div className="relative group mb-4">
               <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[#10B981] to-[#059669] flex items-center justify-center text-white text-3xl font-bold shadow-lg ring-4 ring-green-100 overflow-hidden transition-transform duration-300 group-hover:scale-105">
                 {profile.photoUrl ? (
-                  <img src={`http://localhost:8080${profile.photoUrl}?t=${Date.now()}`} alt="avatar" className="w-24 h-24 object-cover" />
-                ) : (getInitials())}
+                  <img src={`http://localhost:8080${profile.photoUrl}?t=${photoTimestamp}`} alt="avatar" className="w-24 h-24 object-cover" />
+                ) : getInitials()}
               </div>
             </div>
             <label className="flex items-center gap-2 border border-[#0BA6DF] text-[#0BA6DF] px-5 py-2 rounded-lg cursor-pointer text-sm font-semibold hover:bg-[#0BA6DF] hover:text-white transition-all duration-200 shadow-sm hover:shadow-md">
@@ -258,82 +204,78 @@ export default function Profile() {
 
         {/* Personal Information Card */}
         <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/60 border border-gray-100/80 overflow-hidden mb-4">
-        <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, #EF7722 0%, #f59340 100%)' }} />
-        <div className="p-6">
+          <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, #EF7722 0%, #f59340 100%)' }} />
+          <div className="p-6">
             <div className="flex justify-between items-center mb-5">
-            <h3 className="text-lg font-bold text-[#111827]">Personal Information</h3>
-            <button
+              <h3 className="text-lg font-bold text-[#111827]">Personal Information</h3>
+              <button
                 onClick={() => { setEditingInfo(!editingInfo); setFirstName(profile.firstName); setLastName(profile.lastName); }}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 ${editingInfo ? 'bg-red-50 text-red-500 hover:bg-red-100' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
-            >
+              >
                 {editingInfo ? (
-                <><svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>Cancel</>
+                  <><svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>Cancel</>
                 ) : (
-                <><svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>Edit</>
+                  <><svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>Edit</>
                 )}
-            </button>
+              </button>
             </div>
             <div className="grid grid-cols-2 gap-4 mb-4">
-            <div>
+              <div>
                 <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">First Name</label>
                 <input value={firstName} onChange={(e) => setFirstName(e.target.value)} disabled={!editingInfo}
-                className={`w-full px-4 py-2.5 rounded-xl border text-sm text-[#111827] outline-none transition-all duration-200 ${editingInfo ? 'border-gray-200 focus:border-[#EF7722] focus:ring-2 focus:ring-orange-100 hover:border-gray-300' : 'border-gray-100 bg-gray-50 text-gray-400 cursor-not-allowed'}`} />
-            </div>
-            <div>
+                  className={`w-full px-4 py-2.5 rounded-xl border text-sm text-[#111827] outline-none transition-all duration-200 ${editingInfo ? 'border-gray-200 focus:border-[#EF7722] focus:ring-2 focus:ring-orange-100 hover:border-gray-300' : 'border-gray-100 bg-gray-50 text-gray-400 cursor-not-allowed'}`} />
+              </div>
+              <div>
                 <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">Last Name</label>
                 <input value={lastName} onChange={(e) => setLastName(e.target.value)} disabled={!editingInfo}
-                className={`w-full px-4 py-2.5 rounded-xl border text-sm text-[#111827] outline-none transition-all duration-200 ${editingInfo ? 'border-gray-200 focus:border-[#EF7722] focus:ring-2 focus:ring-orange-100 hover:border-gray-300' : 'border-gray-100 bg-gray-50 text-gray-400 cursor-not-allowed'}`} />
-            </div>
+                  className={`w-full px-4 py-2.5 rounded-xl border text-sm text-[#111827] outline-none transition-all duration-200 ${editingInfo ? 'border-gray-200 focus:border-[#EF7722] focus:ring-2 focus:ring-orange-100 hover:border-gray-300' : 'border-gray-100 bg-gray-50 text-gray-400 cursor-not-allowed'}`} />
+              </div>
             </div>
             <div>
-            <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">Email Address</label>
-            <input value={profile.email} disabled className="w-full px-4 py-2.5 rounded-xl border border-gray-100 text-sm text-gray-400 bg-gray-50 cursor-not-allowed" />
+              <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">Email Address</label>
+              <input value={profile.email} disabled className="w-full px-4 py-2.5 rounded-xl border border-gray-100 text-sm text-gray-400 bg-gray-50 cursor-not-allowed" />
             </div>
-        </div>
+          </div>
         </div>
 
         {/* Change Password Card */}
         <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/60 border border-gray-100/80 overflow-hidden mb-6">
-        <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, #EF7722 0%, #f59340 100%)' }} />
-        <div className="p-6">
+          <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, #EF7722 0%, #f59340 100%)' }} />
+          <div className="p-6">
             <div className="flex justify-between items-center">
-            <div>
+              <div>
                 <h3 className="text-lg font-bold text-[#111827]">Change Password</h3>
                 {!showPasswordFields && (
-                <p className="text-gray-400 text-sm mt-1">Click "Change Password" to update your password</p>
+                  <p className="text-gray-400 text-sm mt-1">Click "Change Password" to update your password</p>
                 )}
-            </div>
-            <button
+              </div>
+              <button
                 onClick={() => { setShowPasswordFields(!showPasswordFields); setPassword(''); setConfirmPassword(''); }}
                 className="border border-[#0BA6DF] text-[#0BA6DF] px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#0BA6DF] hover:text-white transition-all duration-200 flex-shrink-0"
-            >
+              >
                 {showPasswordFields ? 'Cancel' : 'Change Password'}
-            </button>
+              </button>
             </div>
             {showPasswordFields && (
-            <div className="mt-5 border-t border-gray-100 pt-5">
+              <div className="mt-5 border-t border-gray-100 pt-5">
                 <div className="mb-4">
-                <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">New Password</label>
-                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 8 characters"
+                  <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">New Password</label>
+                  <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 8 characters"
                     className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-[#EF7722] focus:ring-2 focus:ring-orange-100 transition-all duration-200" />
                 </div>
                 <div>
-                <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">Confirm Password</label>
-                <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Repeat new password"
+                  <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">Confirm Password</label>
+                  <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Repeat new password"
                     className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-[#EF7722] focus:ring-2 focus:ring-orange-100 transition-all duration-200" />
                 </div>
-            </div>
+              </div>
             )}
-        </div>
+          </div>
         </div>
 
-        {/* Save Changes — only shows when editing */}
         {(editingInfo || showPasswordFields) && (
-          <button
-            onClick={handleUpdateProfile}
-            disabled={loading}
-            className="w-full bg-gradient-to-r from-[#EF7722] to-[#f59340] text-white py-3 rounded-xl font-bold text-sm shadow-lg shadow-orange-200 hover:shadow-orange-300 hover:from-[#e06b18] hover:to-[#EF7722] transition-all duration-200 disabled:opacity-50"
-          >
+          <button onClick={handleUpdateProfile} disabled={loading}
+            className="w-full bg-gradient-to-r from-[#EF7722] to-[#f59340] text-white py-3 rounded-xl font-bold text-sm shadow-lg shadow-orange-200 hover:shadow-orange-300 hover:from-[#e06b18] hover:to-[#EF7722] transition-all duration-200 disabled:opacity-50">
             {loading ? 'Saving...' : 'Save Changes'}
           </button>
         )}
@@ -346,34 +288,17 @@ export default function Profile() {
             <h3 className="text-lg font-bold text-[#111827] mb-2">Crop Your Photo</h3>
             <p className="text-gray-400 text-sm mb-4">Drag to reposition. The crop area is fixed to a circle.</p>
             <div className="flex justify-center mb-6">
-              <ReactCrop
-                crop={crop}
-                onChange={(c) => setCrop(c)}
-                onComplete={(c) => setCompletedCrop(c)}
-                aspect={1}
-                circularCrop
-              >
-                <img
-                  ref={imgRef}
-                  src={imgSrc}
-                  onLoad={onImageLoad}
-                  style={{ maxHeight: '400px', maxWidth: '100%' }}
-                  alt="crop preview"
-                />
+              <ReactCrop crop={crop} onChange={(c) => setCrop(c)} onComplete={(c) => setCompletedCrop(c)} aspect={1} circularCrop>
+                <img ref={imgRef} src={imgSrc} onLoad={onImageLoad} style={{ maxHeight: '400px', maxWidth: '100%' }} alt="crop preview" />
               </ReactCrop>
             </div>
             <div className="flex gap-3">
-              <button
-                onClick={() => { setShowCropModal(false); setImgSrc(''); }}
-                className="flex-1 border border-gray-200 text-gray-500 py-2.5 rounded-xl text-sm font-semibold hover:border-gray-300 hover:text-gray-700 transition-all duration-200"
-              >
+              <button onClick={() => { setShowCropModal(false); setImgSrc(''); }}
+                className="flex-1 border border-gray-200 text-gray-500 py-2.5 rounded-xl text-sm font-semibold hover:border-gray-300 hover:text-gray-700 transition-all duration-200">
                 Cancel
               </button>
-              <button
-                onClick={handleCropAndUpload}
-                disabled={photoLoading}
-                className="flex-1 bg-gradient-to-r from-[#EF7722] to-[#f59340] text-white py-2.5 rounded-xl text-sm font-bold shadow-lg hover:from-[#e06b18] hover:to-[#EF7722] transition-all duration-200 disabled:opacity-50"
-              >
+              <button onClick={handleCropAndUpload} disabled={photoLoading}
+                className="flex-1 bg-gradient-to-r from-[#EF7722] to-[#f59340] text-white py-2.5 rounded-xl text-sm font-bold shadow-lg hover:from-[#e06b18] hover:to-[#EF7722] transition-all duration-200 disabled:opacity-50">
                 {photoLoading ? 'Uploading...' : 'Save Photo'}
               </button>
             </div>
@@ -391,15 +316,13 @@ export default function Profile() {
               </svg>
             </div>
             <h3 className="text-lg font-bold text-[#111827] mb-1 text-center">Unsaved Changes</h3>
-            <p className="text-gray-400 text-sm mb-6 text-center">
-              You have unsaved changes. Do you want to leave without saving?
-            </p>
+            <p className="text-gray-400 text-sm mb-6 text-center">You have unsaved changes. Do you want to leave without saving?</p>
             <div className="flex gap-3">
-              <button type="button" onClick={() => setShowLeaveDialog(false)}
+              <button onClick={() => setShowLeaveDialog(false)}
                 className="flex-1 px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm text-gray-500 hover:bg-gray-50 transition-all font-medium">
                 Stay
               </button>
-              <button type="button" onClick={() => { setShowLeaveDialog(false); navigate(-1); }}
+              <button onClick={() => { setShowLeaveDialog(false); navigate('/admin'); }}
                 className="flex-1 px-4 py-2.5 bg-[#EF7722] text-white rounded-xl text-sm font-bold hover:bg-orange-600 transition-all shadow-md shadow-orange-100">
                 Leave
               </button>
@@ -407,7 +330,6 @@ export default function Profile() {
           </div>
         </div>
       )}
-
-    </div>
+    </AdminLayout>
   );
 }
