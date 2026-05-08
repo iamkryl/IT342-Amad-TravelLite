@@ -93,6 +93,7 @@ public class AuthService {
         userMap.put("first_name", user.getFirstName());
         userMap.put("last_name", user.getLastName());
         userMap.put("email", user.getEmail());
+        userMap.put("role", user.getRole());
         data.put("user", userMap);
         data.put("accessToken", token);
 
