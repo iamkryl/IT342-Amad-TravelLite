@@ -18,26 +18,31 @@ export default function Login() {
     try {
       const res = await loginUser({ email, password });
       if (res.data.success) {
-      console.log('user data:', res.data.data.user);
-      localStorage.setItem('token', res.data.data.accessToken);
-      localStorage.setItem('user', JSON.stringify({
-        id: res.data.data.user.userId,
-        first_name: res.data.data.user.firstName,
-        last_name: res.data.data.user.lastName,
-        email: res.data.data.user.email,
-        role: res.data.data.user.role,
-      }));
-      const role = res.data.data.user.role;
-      if (role === 'ADMIN') {
-        navigate('/admin');
+        console.log('user data:', res.data.data.user);
+        localStorage.setItem('token', res.data.data.accessToken);
+        localStorage.setItem('user', JSON.stringify({
+          id: res.data.data.user.userId,
+          first_name: res.data.data.user.firstName,
+          last_name: res.data.data.user.lastName,
+          email: res.data.data.user.email,
+          role: res.data.data.user.role,
+        }));
+        const role = res.data.data.user.role;
+        if (role === 'ADMIN') {
+          navigate('/admin');
+        } else {
+          navigate('/dashboard');
+        }
       } else {
-        navigate('/dashboard');
-}
-    } else {
-      setError('Invalid email or password.');
-    }
+        const errCode = res.data.error?.code;
+        if (errCode === 'AUTH-003') {
+          setError('SUSPENDED');
+        } else {
+          setError('Invalid email or password.');
+        }
+      }
     } catch (err: any) {
-      setError('Invalid email or password');
+      setError('Invalid email or password.');
     } finally {
       setLoading(false);
     }
@@ -62,7 +67,21 @@ export default function Login() {
           <span onClick={() => navigate('/register')} className="text-[#EF7722] cursor-pointer hover:underline">Sign up</span>
         </p>
 
-        {error && <p className="text-red-400 text-sm text-center mb-4">{error}</p>}
+        {/* Error Messages */}
+        {error === 'SUSPENDED' ? (
+          <div className="flex items-start gap-3 px-4 py-3 rounded-xl mb-5"
+            style={{ background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)' }}>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+            </svg>
+            <div>
+              <p className="text-red-400 text-sm font-bold">Account Suspended</p>
+              <p className="text-red-300 text-xs mt-0.5">Your account has been suspended. Please contact the administrator.</p>
+            </div>
+          </div>
+        ) : error ? (
+          <p className="text-red-400 text-sm text-center mb-4">{error}</p>
+        ) : null}
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
@@ -126,7 +145,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#EF7722] text-white font-semibold py-3 rounded-lg hover:bg-orange-600 transition"
+            className="w-full bg-[#EF7722] text-white font-semibold py-3 rounded-lg hover:bg-orange-600 transition disabled:opacity-50"
           >
             {loading ? 'Signing in...' : 'Sign in'}
           </button>

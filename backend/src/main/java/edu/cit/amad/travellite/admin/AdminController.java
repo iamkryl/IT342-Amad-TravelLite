@@ -51,6 +51,18 @@ public class AdminController {
         response.put("timestamp", LocalDateTime.now().toString());
         return ResponseEntity.ok(response);
     }
+    
+    @PatchMapping("/users/{userId}/reactivate")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> reactivateUser(@PathVariable Long userId) {
+        adminService.reactivateUser(userId);
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("data", "User reactivated successfully");
+        response.put("error", null);
+        response.put("timestamp", LocalDateTime.now().toString());
+        return ResponseEntity.ok(response);
+    }
 
     @DeleteMapping("/users/{userId}")
     @PreAuthorize("hasRole('ADMIN')")

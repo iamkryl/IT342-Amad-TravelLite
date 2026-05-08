@@ -18,7 +18,7 @@ export default function UserManagement() {
   const token = localStorage.getItem('token');
   const [confirmModal, setConfirmModal] = useState<{
     show: boolean;
-    type: 'suspend' | 'delete';
+    type: 'suspend' | 'delete' | 'reactivate';
     userId: number;
     userName: string;
   }>({ show: false, type: 'suspend', userId: 0, userName: '' });
@@ -40,6 +40,10 @@ export default function UserManagement() {
     try {
       if (type === 'suspend') {
         await axios.patch(`http://localhost:8080/api/v1/admin/users/${userId}/suspend`, {}, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } else if (type === 'reactivate') {
+        await axios.patch(`http://localhost:8080/api/v1/admin/users/${userId}/reactivate`, {}, {
           headers: { Authorization: `Bearer ${token}` },
         });
       } else {
@@ -106,19 +110,13 @@ export default function UserManagement() {
             <span className="bg-blue-50 text-[#0BA6DF] text-xs font-bold px-2.5 py-1 rounded-lg border border-blue-100">
               {filteredUsers.length} users
             </span>
-
-            {/* Search Box */}
             <div className="ml-auto flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 w-72 focus-within:border-[#0BA6DF] focus-within:bg-white focus-within:shadow-sm transition-all duration-200">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
-              <input
-                type="text"
-                placeholder="Search by ID, name or email..."
-                value={search}
+              <input type="text" placeholder="Search by ID, name or email..." value={search}
                 onChange={e => setSearch(e.target.value)}
-                className="bg-transparent outline-none text-sm text-gray-700 placeholder-gray-400 w-full"
-              />
+                className="bg-transparent outline-none text-sm text-gray-700 placeholder-gray-400 w-full" />
               {search && (
                 <button onClick={() => setSearch('')} className="text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -174,7 +172,7 @@ export default function UserManagement() {
                       <div className="flex items-center gap-3">
                         <div
                           className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-bold flex-shrink-0 transition-all duration-200 group-hover/row:scale-110 group-hover/row:rotate-3"
-                          style={{ background: 'linear-gradient(135deg, #0BA6DF 0%, #0891c2 100%)', boxShadow: '0 2px 8px rgba(11,166,223,0.3)' }}
+                          style={{ background: u.isActive ? 'linear-gradient(135deg, #0BA6DF 0%, #0891c2 100%)' : 'linear-gradient(135deg, #9CA3AF 0%, #6B7280 100%)', boxShadow: u.isActive ? '0 2px 8px rgba(11,166,223,0.3)' : 'none' }}
                         >
                           {u.firstName.charAt(0)}{u.lastName.charAt(0)}
                         </div>
@@ -199,22 +197,27 @@ export default function UserManagement() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex gap-2">
-                        <button
-                          onClick={() => setConfirmModal({ show: true, type: 'suspend', userId: u.userId, userName: `${u.firstName} ${u.lastName}` })}
-                          disabled={!u.isActive}
-                          className="px-3 py-1.5 rounded-lg text-xs font-bold border transition-all duration-200 hover:-translate-y-0.5"
-                          style={{
-                            borderColor: '#FAA533',
-                            color: '#FAA533',
-                            background: 'transparent',
-                            opacity: u.isActive ? 1 : 0.35,
-                            cursor: u.isActive ? 'pointer' : 'not-allowed',
-                          }}
-                          onMouseEnter={e => { if (u.isActive) { e.currentTarget.style.background = '#FAA533'; e.currentTarget.style.color = 'white'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(250,165,51,0.35)'; } }}
-                          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#FAA533'; e.currentTarget.style.boxShadow = 'none'; }}
-                        >
-                          Suspend
-                        </button>
+                        {u.isActive ? (
+                          <button
+                            onClick={() => setConfirmModal({ show: true, type: 'suspend', userId: u.userId, userName: `${u.firstName} ${u.lastName}` })}
+                            className="px-3 py-1.5 rounded-lg text-xs font-bold border transition-all duration-200 hover:-translate-y-0.5"
+                            style={{ borderColor: '#FAA533', color: '#FAA533', background: 'transparent' }}
+                            onMouseEnter={e => { e.currentTarget.style.background = '#FAA533'; e.currentTarget.style.color = 'white'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(250,165,51,0.35)'; }}
+                            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#FAA533'; e.currentTarget.style.boxShadow = 'none'; }}
+                          >
+                            Suspend
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => setConfirmModal({ show: true, type: 'reactivate', userId: u.userId, userName: `${u.firstName} ${u.lastName}` })}
+                            className="px-3 py-1.5 rounded-lg text-xs font-bold border transition-all duration-200 hover:-translate-y-0.5"
+                            style={{ borderColor: '#10B981', color: '#10B981', background: 'transparent' }}
+                            onMouseEnter={e => { e.currentTarget.style.background = '#10B981'; e.currentTarget.style.color = 'white'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(16,185,129,0.35)'; }}
+                            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#10B981'; e.currentTarget.style.boxShadow = 'none'; }}
+                          >
+                            Reactivate
+                          </button>
+                        )}
                         <button
                           onClick={() => setConfirmModal({ show: true, type: 'delete', userId: u.userId, userName: `${u.firstName} ${u.lastName}` })}
                           className="px-3 py-1.5 rounded-lg text-xs font-bold border transition-all duration-200 hover:-translate-y-0.5"
@@ -232,7 +235,6 @@ export default function UserManagement() {
             </tbody>
           </table>
 
-          {/* ── Footer ── */}
           {filteredUsers.length > 0 && (
             <div className="px-6 py-3 flex items-center justify-between" style={{ borderTop: '1px solid #f3f4f6', background: '#FAFAFA' }}>
               <p className="text-xs text-gray-400">
@@ -256,14 +258,18 @@ export default function UserManagement() {
       {/* ── Confirm Modal ── */}
       {confirmModal.show && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
-          <div
-            className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl border border-gray-100 transition-all duration-200"
-            style={{ animation: 'slideUp 0.2s ease-out' }}
-          >
-            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-4 ${confirmModal.type === 'suspend' ? 'bg-orange-50' : 'bg-red-50'}`}>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl border border-gray-100">
+            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-4 ${
+              confirmModal.type === 'suspend' ? 'bg-orange-50' :
+              confirmModal.type === 'reactivate' ? 'bg-green-50' : 'bg-red-50'
+            }`}>
               {confirmModal.type === 'suspend' ? (
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#FAA533]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              ) : confirmModal.type === 'reactivate' ? (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#10B981]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               ) : (
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#EF4444]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -273,33 +279,28 @@ export default function UserManagement() {
               )}
             </div>
             <h3 className="text-lg font-bold text-[#111827] mb-1 text-center">
-              {confirmModal.type === 'suspend' ? 'Suspend User' : 'Delete User'}
+              {confirmModal.type === 'suspend' ? 'Suspend User' : confirmModal.type === 'reactivate' ? 'Reactivate User' : 'Delete User'}
             </h3>
             <p className="text-gray-400 text-sm mb-6 text-center">
-              Are you sure you want to {confirmModal.type === 'suspend' ? 'suspend' : 'permanently delete'}{' '}
+              Are you sure you want to {confirmModal.type === 'suspend' ? 'suspend' : confirmModal.type === 'reactivate' ? 'reactivate' : 'permanently delete'}{' '}
               <span className="font-semibold text-[#111827]">"{confirmModal.userName}"</span>?
-              {confirmModal.type === 'delete' && (
-                <span className="block text-red-400 text-xs mt-1">This action cannot be undone.</span>
-              )}
+              {confirmModal.type === 'delete' && <span className="block text-red-400 text-xs mt-1">This action cannot be undone.</span>}
+              {confirmModal.type === 'reactivate' && <span className="block text-green-500 text-xs mt-1">This will restore their account access.</span>}
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => setConfirmModal(prev => ({ ...prev, show: false }))}
-                className="flex-1 px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm text-gray-500 hover:bg-gray-50 hover:border-gray-300 transition-all font-medium"
-              >
+                className="flex-1 px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm text-gray-500 hover:bg-gray-50 hover:border-gray-300 transition-all font-medium">
                 Cancel
               </button>
               <button
                 onClick={handleConfirmAction}
                 className="flex-1 px-4 py-2.5 text-white rounded-xl text-sm font-bold transition-all hover:-translate-y-0.5"
                 style={{
-                  background: confirmModal.type === 'suspend' ? '#FAA533' : '#EF4444',
-                  boxShadow: confirmModal.type === 'suspend' ? '0 4px 12px rgba(250,165,51,0.4)' : '0 4px 12px rgba(239,68,68,0.4)',
-                }}
-                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.boxShadow = confirmModal.type === 'suspend' ? '0 8px 20px rgba(250,165,51,0.5)' : '0 8px 20px rgba(239,68,68,0.5)'; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.boxShadow = confirmModal.type === 'suspend' ? '0 4px 12px rgba(250,165,51,0.4)' : '0 4px 12px rgba(239,68,68,0.4)'; }}
-              >
-                {confirmModal.type === 'suspend' ? 'Suspend' : 'Delete'}
+                  background: confirmModal.type === 'suspend' ? '#FAA533' : confirmModal.type === 'reactivate' ? '#10B981' : '#EF4444',
+                  boxShadow: confirmModal.type === 'suspend' ? '0 4px 12px rgba(250,165,51,0.4)' : confirmModal.type === 'reactivate' ? '0 4px 12px rgba(16,185,129,0.4)' : '0 4px 12px rgba(239,68,68,0.4)',
+                }}>
+                {confirmModal.type === 'suspend' ? 'Suspend' : confirmModal.type === 'reactivate' ? 'Reactivate' : 'Delete'}
               </button>
             </div>
           </div>

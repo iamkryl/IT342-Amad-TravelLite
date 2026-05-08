@@ -46,6 +46,13 @@ public class AdminService {
         userRepository.save(user);
     }
 
+    public void reactivateUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        user.setIsActive(true);
+        userRepository.save(user);
+    }
+
     public void deleteUser(Long userId) {
         userRepository.deleteById(userId);
     }
