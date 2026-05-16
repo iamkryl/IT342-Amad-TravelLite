@@ -54,6 +54,14 @@ export default function AdminProfile() {
   const handleUpdateProfile = async () => {
     setError('');
     setMessage('');
+    if (!firstName.trim() || !lastName.trim()) {
+      setError('First name and last name cannot be empty.');
+      return;
+    }
+    if (showPasswordFields && !password) {
+      setError('Please enter a new password or click Cancel to dismiss.');
+      return;
+    }
     if (password && password !== confirmPassword) {
       setError('Passwords do not match.');
       return;

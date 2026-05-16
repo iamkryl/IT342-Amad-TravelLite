@@ -62,12 +62,16 @@ export default function Profile() {
       setError('Password must be at least 8 characters.');
       return;
     }
+    if (!firstName.trim() || !lastName.trim()) {
+      setError('First name and last name cannot be empty.');
+      return;
+    }
+    if (showPasswordFields && !password) {
+      setError('Please enter a new password or click Cancel to dismiss.');
+      return;
+    }
     setLoading(true);
     try {
-      if (!firstName.trim() || !lastName.trim()) {
-        setError('First name and last name cannot be empty.');
-        return;
-      }
       const payload: any = { firstName, lastName };
       if (password) payload.password = password;
       const res = await updateProfile(payload);
