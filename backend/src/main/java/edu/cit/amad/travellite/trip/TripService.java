@@ -1,0 +1,194 @@
+package edu.cit.amad.travellite.trip;
+
+import edu.cit.amad.travellite.dashboard.DashboardResponse;
+import edu.cit.amad.travellite.user.User;
+import edu.cit.amad.travellite.user.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import edu.cit.amad.travellite.shared.TripEventPublisher;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class TripService {
+
+    @Autowired private TripRepository tripRepository;
+    @Autowired private UserRepository userRepository;
+    @Autowired private BudgetItemRepository budgetItemRepository;
+    @Autowired private PlaceRepository placeRepository;
+    @Autowired private ChecklistItemRepository checklistItemRepository;
+    @Autowired private TripCompanionRepository tripCompanionRepository;
+    @Autowired private TripEventPublisher tripEventPublisher;
+
+    @Autowired private TripFacade tripFacade;
+
+    public List<TripResponse> getAllTrips(Long userId) {
+        return tripRepository.findByUserUserId(userId)
+                .stream().map(this::mapToResponse).collect(Collectors.toList());
+    }
+    public List<TripResponse> getCompanionTrips(Long userId) {
+        return tripRepository.findCompanionTripsByUserId(userId)
+                .stream().map(this::mapToResponse).collect(Collectors.toList());
+    }
+    public TripResponse getTripById(Integer tripId) {
+        Trip trip = tripRepository.findById(tripId)
+                .orElseThrow(() -> new RuntimeException("Trip not found"));
+        return mapToResponse(trip);
+    }
+
+    public TripResponse createTrip(Long userId, TripRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        TripRequest builtRequest = TripRequest.builder()
+                .title(request.getTitle())
+                .destination(request.getDestination())
+                .origin(request.getOrigin())
+                .startDate(request.getStartDate())
+                .endDate(request.getEndDate())
+                .budgetItems(request.getBudgetItems())
+                .places(request.getPlaces())
+                .checklistItems(request.getChecklistItems())
+                .companions(request.getCompanions())
+                .build();
+
+        Trip trip = new Trip();
+        trip.setUser(user);
+        trip.setTitle(builtRequest.getTitle());
+        trip.setDestination(builtRequest.getDestination());
+        trip.setOrigin(builtRequest.getOrigin());
+        trip.setStartDate(builtRequest.getStartDate());
+        trip.setEndDate(builtRequest.getEndDate());
+        Trip savedTrip = tripRepository.save(trip);
+
+        tripFacade.saveTripComponents(savedTrip, builtRequest);
+        tripEventPublisher.publishTripCreated(userId);
+
+        return mapToResponse(tripRepository.findById(savedTrip.getTripId()).get());
+    }
+
+    public TripResponse updateTrip(Integer tripId, TripRequest request) {
+        Trip trip = tripRepository.findById(tripId)
+                .orElseThrow(() -> new RuntimeException("Trip not found"));
+
+        trip.setTitle(request.getTitle());
+        trip.setDestination(request.getDestination());
+        trip.setOrigin(request.getOrigin());
+        trip.setStartDate(request.getStartDate());
+        trip.setEndDate(request.getEndDate());
+        tripRepository.save(trip);
+
+        tripFacade.updateTripComponents(trip, request);
+
+        return mapToResponse(tripRepository.findById(tripId).get());
+    }
+
+    public void deleteTrip(Integer tripId) {
+        Trip trip = tripRepository.findById(tripId)
+                .orElseThrow(() -> new RuntimeException("Trip not found"));
+        Long userId = trip.getUser().getUserId();
+        tripRepository.deleteById(tripId);
+
+        tripEventPublisher.publishTripDeleted(userId);
+    }
+
+    public DashboardResponse getDashboard(Long userId) {
+        List<Trip> trips = tripRepository.findByUserUserId(userId);
+        BigDecimal totalExpense = BigDecimal.ZERO;
+
+        for (Trip trip : trips) {
+            List<BudgetItem> items = budgetItemRepository.findByTripTripId(trip.getTripId());
+            for (BudgetItem item : items) {
+                totalExpense = totalExpense.add(item.getAmount());
+            }
+        }
+
+        List<Trip> upcoming = tripRepository.findByUserUserIdAndStartDateAfter(userId, LocalDate.now());
+        List<Trip> companionUpcoming = tripRepository.findCompanionUpcomingTripsByUserId(userId, LocalDate.now());
+
+        DashboardResponse response = new DashboardResponse();
+        response.setTotalTrips(trips.size());
+        response.setOverallExpense(totalExpense);
+        response.setUpcomingTravelsCount(upcoming.size() + companionUpcoming.size());
+        return response;
+    }
+
+    public List<TripResponse> getUpcomingTrips(Long userId) {
+        List<Trip> ownUpcoming = tripRepository.findByUserUserIdAndStartDateAfter(userId, LocalDate.now());
+        List<Trip> companionUpcoming = tripRepository.findCompanionUpcomingTripsByUserId(userId, LocalDate.now());
+        List<Trip> all = new java.util.ArrayList<>();
+        all.addAll(ownUpcoming);
+        all.addAll(companionUpcoming);
+        return all.stream().map(this::mapToResponse).collect(Collectors.toList());
+    }
+
+    public void toggleChecklistItem(Integer itemId, boolean isChecked) {
+        ChecklistItem item = checklistItemRepository.findById(itemId)
+                .orElseThrow(() -> new RuntimeException("Checklist item not found"));
+        item.setIsChecked(isChecked);
+        checklistItemRepository.save(item);
+    }
+    private TripResponse mapToResponse
+            (Trip trip) {
+        TripResponse response = new TripResponse();
+        response.setTripId(trip.getTripId());
+        response.setTitle(trip.getTitle());
+        response.setDestination(trip.getDestination());
+        response.setOrigin(trip.getOrigin());
+        response.setStartDate(trip.getStartDate());
+        response.setEndDate(trip.getEndDate());
+        response.setCreatedAt(trip.getCreatedAt());
+        response.setCreatedBy(trip.getUser().getUserId());
+
+        if (trip.getStartDate() != null && trip.getEndDate() != null) {
+            response.setDuration(ChronoUnit.DAYS.between(trip.getStartDate(), trip.getEndDate()));
+        }
+
+        List<BudgetItem> budgetItems = budgetItemRepository.findByTripTripId(trip.getTripId());
+        BigDecimal total = budgetItems.stream()
+                .map(BudgetItem::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        response.setTotalExpenses(total);
+
+        response.setBudgetItems(budgetItems.stream().map(b -> {
+            TripResponse.BudgetItemResponse br = new TripResponse.BudgetItemResponse();
+            br.setBudgetId(b.getBudgetId());
+            br.setCategory(b.getCategory());
+            br.setAmount(b.getAmount());
+            return br;
+        }).collect(Collectors.toList()));
+
+        List<Place> places = placeRepository.findByTripTripId(trip.getTripId());
+        response.setPlaces(places.stream().map(p -> {
+            TripResponse.PlaceResponse pr = new TripResponse.PlaceResponse();
+            pr.setPlaceId(p.getPlaceId());
+            pr.setName(p.getName());
+            return pr;
+        }).collect(Collectors.toList()));
+
+        List<ChecklistItem> checklistItems = checklistItemRepository.findByTripTripId(trip.getTripId());
+        response.setChecklistItems(checklistItems.stream().map(c -> {
+            TripResponse.ChecklistItemResponse cr = new TripResponse.ChecklistItemResponse();
+            cr.setItemId(c.getItemId());
+            cr.setName(c.getName());
+            cr.setIsChecked(c.getIsChecked());
+            return cr;
+        }).collect(Collectors.toList()));
+
+        List<TripCompanion> companions = tripCompanionRepository.findByTripTripId(trip.getTripId());
+        response.setCompanions(companions.stream().map(c -> {
+            TripResponse.CompanionResponse cr = new TripResponse.CompanionResponse();
+            cr.setCompanionId(c.getCompanionId());
+            cr.setFirstName(c.getUser().getFirstName());
+            cr.setLastName(c.getUser().getLastName());
+            cr.setEmail(c.getUser().getEmail());
+            return cr;
+        }).collect(Collectors.toList()));
+
+        return response;
+    }
+}
