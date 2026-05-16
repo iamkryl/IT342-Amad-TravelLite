@@ -122,20 +122,26 @@ public class TripController {
     }
 
     @PutMapping("/trips/{id}")
-    public ResponseEntity<?> updateTrip(
-            @PathVariable Integer id,
-            @RequestBody TripRequest request) {
-        TripResponse trip = tripService.updateTrip(id, request);
+    public ResponseEntity<?> updateTrip(@PathVariable Integer id, @RequestBody TripRequest request, @AuthenticationPrincipal UserDetails userDetails) {
+        Long userId = getUserId(userDetails);
+        Trip trip = tripRepository.findById(id).orElse(null);
+        if (trip == null) return ResponseEntity.status(404).body(Map.of("success", false, "error", Map.of("message", "Trip not found")));
+        if (!trip.getUser().getUserId().equals(userId)) return ResponseEntity.status(403).body(Map.of("success", false, "error", Map.of("message", "Access denied")));
+        TripResponse updatedTrip = tripService.updateTrip(id, request);
         Map<String, Object> response = new HashMap<>();
         response.put("success", true);
-        response.put("data", trip);
+        response.put("data", updatedTrip);
         response.put("error", null);
         response.put("timestamp", java.time.LocalDateTime.now().toString());
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/trips/{id}")
-    public ResponseEntity<?> deleteTrip(@PathVariable Integer id) {
+    public ResponseEntity<?> deleteTrip(@PathVariable Integer id, @AuthenticationPrincipal UserDetails userDetails) {
+        Long userId = getUserId(userDetails);
+        Trip trip = tripRepository.findById(id).orElse(null);
+        if (trip == null) return ResponseEntity.status(404).body(Map.of("success", false, "error", Map.of("message", "Trip not found")));
+        if (!trip.getUser().getUserId().equals(userId)) return ResponseEntity.status(403).body(Map.of("success", false, "error", Map.of("message", "Access denied")));
         tripService.deleteTrip(id);
         Map<String, Object> response = new HashMap<>();
         response.put("success", true);

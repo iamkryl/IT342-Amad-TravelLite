@@ -63,6 +63,10 @@ export default function Profile() {
     }
     setLoading(true);
     try {
+      if (!firstName.trim() || !lastName.trim()) {
+        setError('First name and last name cannot be empty.');
+        return;
+      }
       const payload: any = { firstName, lastName };
       if (password) payload.password = password;
       const res = await updateProfile(payload);
