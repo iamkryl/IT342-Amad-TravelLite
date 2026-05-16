@@ -64,6 +64,10 @@ export default function UserManagement() {
 
   const activeCount = users.filter(u => u.isActive).length;
   const inactiveCount = users.filter(u => !u.isActive).length;
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 15;
+  const totalPages = Math.ceil(filteredUsers.length / rowsPerPage);
+  const paginatedUsers = filteredUsers.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
 
   return (
     <AdminLayout>
@@ -115,7 +119,7 @@ export default function UserManagement() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
               <input type="text" placeholder="Search by ID, name or email..." value={search}
-                onChange={e => setSearch(e.target.value)}
+                 onChange={e => { setSearch(e.target.value); setCurrentPage(1); }}
                 className="bg-transparent outline-none text-sm text-gray-700 placeholder-gray-400 w-full" />
               {search && (
                 <button onClick={() => setSearch('')} className="text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0">
@@ -127,7 +131,7 @@ export default function UserManagement() {
             </div>
           </div>
 
-          <table className="w-full text-sm">
+          <table className="w-full text-sm" style={{ tableLayout: 'fixed' }}>
             <thead>
               <tr style={{ background: 'linear-gradient(90deg, #1F2937 0%, #374151 100%)' }}>
                 {['ID', 'First Name', 'Last Name', 'Email', 'Status', 'Actions'].map(h => (
@@ -153,11 +157,12 @@ export default function UserManagement() {
                   </td>
                 </tr>
               ) : (
-                filteredUsers.map((u, index) => (
+                <>
+                {paginatedUsers.map((u, index) => (
                   <tr
                     key={u.userId}
                     className="transition-all duration-200 group/row"
-                    style={{ background: index % 2 === 0 ? 'white' : 'rgba(249,250,251,0.5)' }}
+                    style={{ background: index % 2 === 0 ? 'white' : 'rgba(249,250,251,0.5)', height: '57px' }}
                     onMouseEnter={e => {
                       (e.currentTarget as HTMLTableRowElement).style.background = 'rgba(11,166,223,0.03)';
                       (e.currentTarget as HTMLTableRowElement).style.boxShadow = 'inset 3px 0 0 #0BA6DF';
@@ -199,14 +204,15 @@ export default function UserManagement() {
                       <div className="flex gap-2">
                         {u.isActive ? (
                           <button
-                            onClick={() => setConfirmModal({ show: true, type: 'suspend', userId: u.userId, userName: `${u.firstName} ${u.lastName}` })}
-                            className="px-3 py-1.5 rounded-lg text-xs font-bold border transition-all duration-200 hover:-translate-y-0.5"
-                            style={{ borderColor: '#FAA533', color: '#FAA533', background: 'transparent' }}
-                            onMouseEnter={e => { e.currentTarget.style.background = '#FAA533'; e.currentTarget.style.color = 'white'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(250,165,51,0.35)'; }}
-                            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#FAA533'; e.currentTarget.style.boxShadow = 'none'; }}
-                          >
-                            Suspend
-                          </button>
+                          onClick={() => setConfirmModal({ show: true, type: 'suspend', userId: u.userId, userName: `${u.firstName} ${u.lastName}` })}
+                          disabled={u.userId === JSON.parse(localStorage.getItem('user') || '{}').id}
+                          className="px-3 py-1.5 rounded-lg text-xs font-bold border transition-all duration-200 hover:-translate-y-0.5 disabled:opacity-30 disabled:cursor-not-allowed"
+                          style={{ borderColor: '#FAA533', color: '#FAA533', background: 'transparent' }}
+                          onMouseEnter={e => { e.currentTarget.style.background = '#FAA533'; e.currentTarget.style.color = 'white'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(250,165,51,0.35)'; }}
+                          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#FAA533'; e.currentTarget.style.boxShadow = 'none'; }}
+                        >
+                          Suspend
+                        </button>
                         ) : (
                           <button
                             onClick={() => setConfirmModal({ show: true, type: 'reactivate', userId: u.userId, userName: `${u.firstName} ${u.lastName}` })}
@@ -220,6 +226,7 @@ export default function UserManagement() {
                         )}
                         <button
                           onClick={() => setConfirmModal({ show: true, type: 'delete', userId: u.userId, userName: `${u.firstName} ${u.lastName}` })}
+                          disabled={u.userId === JSON.parse(localStorage.getItem('user') || '{}').id}
                           className="px-3 py-1.5 rounded-lg text-xs font-bold border transition-all duration-200 hover:-translate-y-0.5"
                           style={{ borderColor: '#EF4444', color: '#EF4444', background: 'transparent' }}
                           onMouseEnter={e => { e.currentTarget.style.background = '#EF4444'; e.currentTarget.style.color = 'white'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,68,68,0.35)'; }}
@@ -230,7 +237,13 @@ export default function UserManagement() {
                       </div>
                     </td>
                   </tr>
-                ))
+                ))}
+                {Array.from({ length: rowsPerPage - paginatedUsers.length }).map((_, i) => (
+                  <tr key={`empty-${i}`} style={{ height: '57px', background: i % 2 === 0 ? 'white' : 'rgba(249,250,251,0.5)' }}>
+                    <td colSpan={6} />
+                  </tr>
+                ))}
+                </>
               )}
             </tbody>
           </table>
@@ -238,17 +251,24 @@ export default function UserManagement() {
           {filteredUsers.length > 0 && (
             <div className="px-6 py-3 flex items-center justify-between" style={{ borderTop: '1px solid #f3f4f6', background: '#FAFAFA' }}>
               <p className="text-xs text-gray-400">
-                Showing <span className="font-bold text-gray-600">{filteredUsers.length}</span> of <span className="font-bold text-gray-600">{users.length}</span> users
+                Showing <span className="font-bold text-gray-600">{Math.min(currentPage * rowsPerPage, filteredUsers.length)}</span> of <span className="font-bold text-gray-600">{filteredUsers.length}</span> users
               </p>
-              <div className="flex items-center gap-3">
-                <span className="flex items-center gap-1.5 text-xs text-gray-400">
-                  <span className="w-2 h-2 rounded-full bg-[#10B981] inline-block" />
-                  {activeCount} active
-                </span>
-                <span className="flex items-center gap-1.5 text-xs text-gray-400">
-                  <span className="w-2 h-2 rounded-full bg-[#EF4444] inline-block" />
-                  {inactiveCount} suspended
-                </span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1.5 rounded-lg text-xs font-bold border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                >
+                  ← Prev
+                </button>
+                <span className="text-xs text-gray-500 font-medium">Page {currentPage} of {totalPages}</span>
+                <button
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1.5 rounded-lg text-xs font-bold border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                >
+                  Next →
+                </button>
               </div>
             </div>
           )}

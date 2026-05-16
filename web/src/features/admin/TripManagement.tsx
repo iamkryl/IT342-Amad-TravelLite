@@ -62,6 +62,10 @@ export default function TripManagement() {
     destinationCount[dest] = (destinationCount[dest] || 0) + 1;
   });
   const topDest = Object.entries(destinationCount).sort((a, b) => b[1] - a[1])[0]?.[0] ?? '—';
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 15;
+  const totalPages = Math.ceil(filteredTrips.length / rowsPerPage);
+  const paginatedTrips = filteredTrips.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
 
   return (
     <AdminLayout>
@@ -118,7 +122,7 @@ export default function TripManagement() {
                 type="text"
                 placeholder="Search by ID, title, destination..."
                 value={search}
-                onChange={e => setSearch(e.target.value)}
+                onChange={e => { setSearch(e.target.value); setCurrentPage(1); }}
                 className="bg-transparent outline-none text-sm text-gray-700 placeholder-gray-400 w-full"
               />
               {search && (
@@ -132,14 +136,14 @@ export default function TripManagement() {
           </div>
 
           <table className="w-full text-sm">
-            <thead>
-              <tr style={{ background: 'linear-gradient(90deg, #1F2937 0%, #374151 100%)' }}>
+            <thead style={{ display: 'block' }}>
+              <tr style={{ background: 'linear-gradient(90deg, #1F2937 0%, #374151 100%)', display: 'table', width: '100%', tableLayout: 'fixed' }}>
                 {['ID', 'Trip Title', 'Destination', 'From', 'Start Date', 'End Date', 'Created By', 'Actions'].map(h => (
                   <th key={h} className="px-6 py-4 text-left font-bold text-xs uppercase tracking-widest text-gray-300">{h}</th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-gray-50" style={{ display: 'block', minHeight: '855px' }}>
               {filteredTrips.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="px-6 py-16 text-center">
@@ -157,11 +161,12 @@ export default function TripManagement() {
                   </td>
                 </tr>
               ) : (
-                filteredTrips.map((trip, index) => (
+                <>
+                {paginatedTrips.map((trip, index) => (
                   <tr
                     key={trip.tripId}
                     className="transition-all duration-200 group/row"
-                    style={{ background: index % 2 === 0 ? 'white' : 'rgba(249,250,251,0.5)' }}
+                    style={{ background: index % 2 === 0 ? 'white' : 'rgba(249,250,251,0.5)', height: '57px', display: 'table', width: '100%', tableLayout: 'fixed' }}
                     onMouseEnter={e => {
                       (e.currentTarget as HTMLTableRowElement).style.background = 'rgba(239,119,34,0.03)';
                       (e.currentTarget as HTMLTableRowElement).style.boxShadow = 'inset 3px 0 0 #EF7722';
@@ -198,29 +203,35 @@ export default function TripManagement() {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => navigate(`/trips/${trip.tripId}`)}
-                        className="px-3 py-1.5 rounded-lg text-xs font-bold border transition-all duration-200 hover:-translate-y-0.5"
-                        style={{ borderColor: '#0BA6DF', color: '#0BA6DF', background: 'transparent' }}
-                        onMouseEnter={e => { e.currentTarget.style.background = '#0BA6DF'; e.currentTarget.style.color = 'white'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(11,166,223,0.35)'; }}
-                        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#0BA6DF'; e.currentTarget.style.boxShadow = 'none'; }}
-                      >
-                        View
-                      </button>
-                      <button
-                        onClick={() => setConfirmModal({ show: true, tripId: trip.tripId, tripTitle: trip.title })}
-                        className="px-3 py-1.5 rounded-lg text-xs font-bold border transition-all duration-200 hover:-translate-y-0.5"
-                        style={{ borderColor: '#EF4444', color: '#EF4444', background: 'transparent' }}
-                        onMouseEnter={e => { e.currentTarget.style.background = '#EF4444'; e.currentTarget.style.color = 'white'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,68,68,0.35)'; }}
-                        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#EF4444'; e.currentTarget.style.boxShadow = 'none'; }}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => navigate(`/trips/${trip.tripId}`)}
+                      className="px-3 py-1.5 rounded-lg text-xs font-bold border transition-all duration-200 hover:-translate-y-0.5"
+                      style={{ borderColor: '#0BA6DF', color: '#0BA6DF', background: 'transparent' }}
+                      onMouseEnter={e => { e.currentTarget.style.background = '#0BA6DF'; e.currentTarget.style.color = 'white'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(11,166,223,0.35)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#0BA6DF'; e.currentTarget.style.boxShadow = 'none'; }}
+                    >
+                      View
+                    </button>
+                    <button
+                      onClick={() => setConfirmModal({ show: true, tripId: trip.tripId, tripTitle: trip.title })}
+                      className="px-3 py-1.5 rounded-lg text-xs font-bold border transition-all duration-200 hover:-translate-y-0.5"
+                      style={{ borderColor: '#EF4444', color: '#EF4444', background: 'transparent' }}
+                      onMouseEnter={e => { e.currentTarget.style.background = '#EF4444'; e.currentTarget.style.color = 'white'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,68,68,0.35)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#EF4444'; e.currentTarget.style.boxShadow = 'none'; }}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </td>
                   </tr>
-                ))
+                ))}
+                {Array.from({ length: rowsPerPage - paginatedTrips.length }).map((_, i) => (
+                  <tr key={`empty-${i}`} style={{ height: '57px', background: i % 2 === 0 ? 'white' : 'rgba(249,250,251,0.5)', display: 'table', width: '100%', tableLayout: 'fixed' }}>
+                    <td colSpan={8} />
+                  </tr>
+                ))}
+                </>
               )}
             </tbody>
           </table>
@@ -229,17 +240,24 @@ export default function TripManagement() {
           {filteredTrips.length > 0 && (
             <div className="px-6 py-3 flex items-center justify-between" style={{ borderTop: '1px solid #f3f4f6', background: '#FAFAFA' }}>
               <p className="text-xs text-gray-400">
-                Showing <span className="font-bold text-gray-600">{filteredTrips.length}</span> of <span className="font-bold text-gray-600">{trips.length}</span> trips
+                Showing <span className="font-bold text-gray-600">{Math.min(currentPage * rowsPerPage, filteredTrips.length)}</span> of <span className="font-bold text-gray-600">{filteredTrips.length}</span> trips
               </p>
-              <div className="flex items-center gap-3">
-                <span className="flex items-center gap-1.5 text-xs text-gray-400">
-                  <span className="w-2 h-2 rounded-full bg-[#EF7722] inline-block" />
-                  {Object.keys(destinationCount).length} unique destinations
-                </span>
-                <span className="flex items-center gap-1.5 text-xs text-gray-400">
-                  <span className="w-2 h-2 rounded-full bg-[#0BA6DF] inline-block" />
-                  Top: {topDest}
-                </span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1.5 rounded-lg text-xs font-bold border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                >
+                  ← Prev
+                </button>
+                <span className="text-xs text-gray-500 font-medium">Page {currentPage} of {totalPages}</span>
+                <button
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1.5 rounded-lg text-xs font-bold border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                >
+                  Next →
+                </button>
               </div>
             </div>
           )}

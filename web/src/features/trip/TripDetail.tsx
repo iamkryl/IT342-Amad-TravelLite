@@ -118,6 +118,7 @@ export default function TripDetail() {
   const [loading, setLoading] = useState(true);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [checklist, setChecklist] = useState<ChecklistItem[]>([]);
 
@@ -268,7 +269,7 @@ export default function TripDetail() {
       <div className="bg-[#1F2937] px-8 py-3 flex justify-between items-center shadow-lg sticky top-0 z-40">
         <div className="flex items-center gap-4">
           <button
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate(-1)}
             className="text-gray-400 hover:text-white transition-colors p-1.5 rounded-lg hover:bg-white hover:bg-opacity-10"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -303,7 +304,7 @@ export default function TripDetail() {
             </svg>
           </button>
           <button
-            onClick={handleLogout}
+            onClick={() => setShowLogoutModal(true)}
             className="text-gray-400 hover:text-red-400 transition-all duration-200 p-1.5 rounded-lg hover:bg-red-400 hover:bg-opacity-10 hover:scale-110"
             title="Logout"
           >
@@ -362,7 +363,7 @@ export default function TripDetail() {
                   </svg>
                   {formatDateRange(trip.startDate, trip.endDate)}
                   <span className="text-gray-300">•</span>
-                  <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-md text-xs font-semibold">{trip.duration} days</span>
+                  <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-md text-xs font-semibold">{trip.duration} {trip.duration === 1 ? 'day' : 'days'}</span>
                 </div>
               </div>
 
@@ -683,6 +684,27 @@ export default function TripDetail() {
                 className="flex-1 px-4 py-2.5 bg-[#EF4444] text-white rounded-xl text-sm font-bold hover:bg-red-600 transition-all duration-200 disabled:opacity-50 shadow-md shadow-red-100 hover:shadow-red-200 hover:-translate-y-0.5"
               >
                 {deleteLoading ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {showLogoutModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl border border-gray-100">
+            <div className="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-bold text-[#111827] mb-1 text-center">Log out?</h3>
+            <p className="text-gray-400 text-sm mb-6 text-center">Are you sure you want to log out of TravelLite?</p>
+            <div className="flex gap-3">
+              <button onClick={() => setShowLogoutModal(false)} className="flex-1 px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm text-gray-500 hover:bg-gray-50 hover:border-gray-300 transition-all font-medium">
+                Cancel
+              </button>
+              <button onClick={handleLogout} className="flex-1 px-4 py-2.5 bg-[#EF4444] text-white rounded-xl text-sm font-bold hover:bg-red-600 transition-all shadow-md shadow-red-100 hover:-translate-y-0.5">
+                Log out
               </button>
             </div>
           </div>

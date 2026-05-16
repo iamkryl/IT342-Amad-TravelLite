@@ -38,6 +38,7 @@ export default function Dashboard() {
   const [upcomingTrips, setUpcomingTrips] = useState<Trip[]>([]);
   const [upcomingLoading, setUpcomingLoading] = useState(false);
   const [companionTrips, setCompanionTrips] = useState<Trip[]>([]);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   useEffect(() => {
   const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
@@ -166,7 +167,7 @@ export default function Dashboard() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
           </button>
-          <button onClick={handleLogout} className="text-gray-400 hover:text-red-400 transition-colors p-1.5 rounded-lg hover:bg-red-400 hover:bg-opacity-10">
+          <button onClick={() => setShowLogoutModal(true)} className="text-gray-400 hover:text-red-400 transition-colors p-1.5 rounded-lg hover:bg-red-400 hover:bg-opacity-10">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>
@@ -438,11 +439,33 @@ export default function Dashboard() {
 
       {showUpcomingModal && (
         <UpcomingTripsModal
+        
           onClose={() => setShowUpcomingModal(false)}
           trips={upcomingTrips}
           loading={upcomingLoading}
           onTripClick={(id) => navigate(`/trips/${id}`)}
         />
+      )}
+      {showLogoutModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-8 w-full max-w-sm shadow-2xl text-center">
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ background: 'rgba(239,68,68,0.08)' }}>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-black text-[#111827] mb-1">Log out?</h3>
+            <p className="text-gray-400 text-sm mb-6">Are you sure you want to log out of TravelLite?</p>
+            <div className="flex gap-3">
+              <button onClick={() => setShowLogoutModal(false)} className="flex-1 py-2.5 rounded-xl font-bold text-sm text-gray-500 border border-gray-200 hover:bg-gray-50 transition-all">
+                Cancel
+              </button>
+              <button onClick={handleLogout} className="flex-1 py-2.5 rounded-xl font-bold text-sm text-white bg-red-400 hover:bg-red-500 transition-all">
+                Log out
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
