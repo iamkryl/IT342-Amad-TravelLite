@@ -198,6 +198,16 @@ export default function TripManagement() {
                       </div>
                     </td>
                     <td className="px-6 py-4">
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => navigate(`/trips/${trip.tripId}`)}
+                        className="px-3 py-1.5 rounded-lg text-xs font-bold border transition-all duration-200 hover:-translate-y-0.5"
+                        style={{ borderColor: '#0BA6DF', color: '#0BA6DF', background: 'transparent' }}
+                        onMouseEnter={e => { e.currentTarget.style.background = '#0BA6DF'; e.currentTarget.style.color = 'white'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(11,166,223,0.35)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#0BA6DF'; e.currentTarget.style.boxShadow = 'none'; }}
+                      >
+                        View
+                      </button>
                       <button
                         onClick={() => setConfirmModal({ show: true, tripId: trip.tripId, tripTitle: trip.title })}
                         className="px-3 py-1.5 rounded-lg text-xs font-bold border transition-all duration-200 hover:-translate-y-0.5"
@@ -207,7 +217,8 @@ export default function TripManagement() {
                       >
                         Delete
                       </button>
-                    </td>
+                    </div>
+                  </td>
                   </tr>
                 ))
               )}

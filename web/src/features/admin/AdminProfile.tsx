@@ -187,7 +187,7 @@ export default function AdminProfile() {
             <div className="relative group mb-4">
               <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[#10B981] to-[#059669] flex items-center justify-center text-white text-3xl font-bold shadow-lg ring-4 ring-green-100 overflow-hidden transition-transform duration-300 group-hover:scale-105">
                 {profile.photoUrl ? (
-                  <img src={`http://localhost:8080${profile.photoUrl}?t=${photoTimestamp}`} alt="avatar" className="w-24 h-24 object-cover" />
+                  <img src={profile.photoUrl} alt="avatar" className="w-24 h-24 object-cover" />
                 ) : getInitials()}
               </div>
             </div>

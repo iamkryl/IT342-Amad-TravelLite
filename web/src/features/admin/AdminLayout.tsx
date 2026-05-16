@@ -79,7 +79,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           <span className="text-gray-300 text-sm font-medium">{user.first_name} {user.last_name}</span>
           <div className="rounded-full w-9 h-9 overflow-hidden shadow-md ring-2 ring-green-400 ring-opacity-30 flex items-center justify-center bg-gradient-to-br from-[#10B981] to-[#059669]">
             {user.photo_url ? (
-              <img src={`http://localhost:8080${user.photo_url}`} alt="avatar" className="w-9 h-9 object-cover" />
+              <img src={user.photo_url} alt="avatar" className="w-9 h-9 object-cover" />
             ) : (
               <span className="text-white text-sm font-bold">{getUserInitials()}</span>
             )}
@@ -122,7 +122,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           <div className="flex items-center gap-3 px-4 py-3 border-t border-white border-opacity-10">
             <div className="rounded-full w-8 h-8 flex items-center justify-center bg-gradient-to-br from-[#10B981] to-[#059669] text-white text-xs font-bold overflow-hidden">
               {user.photo_url
-                ? <img src={`http://localhost:8080${user.photo_url}`} alt="avatar" className="w-8 h-8 object-cover" />
+                ? <img src={user.photo_url} alt="avatar" className="w-8 h-8 object-cover" />
                 : getUserInitials()}
             </div>
             <div>

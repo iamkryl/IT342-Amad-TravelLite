@@ -90,9 +90,12 @@ public class TripController {
         if (trip == null) {
             return ResponseEntity.status(404).body(Map.of("success", false, "error", Map.of("message", "Trip not found")));
         }
+        User currentUser = userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        boolean isAdmin = "ADMIN".equals(currentUser.getRole());
         boolean isOwner = trip.getUser().getUserId().equals(userId);
         boolean isCompanion = tripCompanionRepository.existsByTripTripIdAndUserUserId(id, userId);
-        if (!isOwner && !isCompanion) {
+        if (!isAdmin && !isOwner && !isCompanion) {
             return ResponseEntity.status(403).body(Map.of("success", false, "error", Map.of("message", "Access denied")));
         }
         TripResponse response = tripService.getTripById(id);
