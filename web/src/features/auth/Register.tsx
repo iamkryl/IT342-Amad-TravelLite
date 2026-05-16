@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { registerUser } from '../../api';
 
 export default function Register() {
@@ -14,6 +14,11 @@ export default function Register() {
   const [agreed, setAgreed] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const token = localStorage.getItem('token');
+  if (token) {
+    return <Navigate to="/dashboard" />;
+  }
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();

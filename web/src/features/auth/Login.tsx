@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { loginUser } from '../../api';
 
 export default function Login() {
@@ -10,6 +10,12 @@ export default function Login() {
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const token = localStorage.getItem('token');
+  const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+  if (token) {
+    return <Navigate to={storedUser.role === 'ADMIN' ? '/admin' : '/dashboard'} />;
+  }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
