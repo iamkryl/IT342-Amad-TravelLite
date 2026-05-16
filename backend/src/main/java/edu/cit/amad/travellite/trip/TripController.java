@@ -24,6 +24,8 @@ public class TripController {
     @Autowired private TripService tripService;
     @Autowired private UserRepository userRepository;
     @Autowired private WeatherAdapter weatherAdapter;
+    @Autowired private TripRepository tripRepository;
+    @Autowired private TripCompanionRepository tripCompanionRepository;
 
     private Long getUserId(UserDetails userDetails) {
         User user = userRepository.findByEmail(userDetails.getUsername())
@@ -79,14 +81,27 @@ public class TripController {
     }
 
     @GetMapping("/trips/{id}")
-    public ResponseEntity<?> getTripById(@PathVariable Integer id) {
-        TripResponse trip = tripService.getTripById(id);
-        Map<String, Object> response = new HashMap<>();
-        response.put("success", true);
-        response.put("data", trip);
-        response.put("error", null);
-        response.put("timestamp", java.time.LocalDateTime.now().toString());
-        return ResponseEntity.ok(response);
+    public ResponseEntity<?> getTripById(
+            @PathVariable Integer id,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        Long userId = getUserId(userDetails);
+        Trip trip = tripRepository.findById(id)
+                .orElse(null);
+        if (trip == null) {
+            return ResponseEntity.status(404).body(Map.of("success", false, "error", Map.of("message", "Trip not found")));
+        }
+        boolean isOwner = trip.getUser().getUserId().equals(userId);
+        boolean isCompanion = tripCompanionRepository.existsByTripTripIdAndUserUserId(id, userId);
+        if (!isOwner && !isCompanion) {
+            return ResponseEntity.status(403).body(Map.of("success", false, "error", Map.of("message", "Access denied")));
+        }
+        TripResponse response = tripService.getTripById(id);
+        Map<String, Object> res = new HashMap<>();
+        res.put("success", true);
+        res.put("data", response);
+        res.put("error", null);
+        res.put("timestamp", java.time.LocalDateTime.now().toString());
+        return ResponseEntity.ok(res);
     }
 
     @PostMapping("/trips")

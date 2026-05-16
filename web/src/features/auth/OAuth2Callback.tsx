@@ -10,15 +10,27 @@ export default function OAuth2Callback() {
     const firstName = searchParams.get('firstName');
     const lastName = searchParams.get('lastName');
     const email = searchParams.get('email');
+    const role = searchParams.get('role');
+    const error = searchParams.get('error');
+
+    if (error === 'suspended') {
+      navigate('/login?error=suspended');
+      return;
+    }
 
     if (token) {
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify({
         first_name: firstName,
         last_name: lastName,
-        email: email
+        email: email,
+        role: role || 'USER',
       }));
-      navigate('/dashboard');
+      if (role === 'ADMIN') {
+        navigate('/admin');
+      } else {
+        navigate('/dashboard');
+      }
     } else {
       navigate('/login');
     }

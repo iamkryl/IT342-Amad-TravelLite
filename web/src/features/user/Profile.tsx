@@ -143,6 +143,9 @@ export default function Profile() {
         const newPhotoUrl = res.data.data.photoUrl;
         setProfile((prev) => ({ ...prev, photoUrl: newPhotoUrl }));
         setMessage('Photo uploaded successfully.');
+        // Force re-fetch profile to sync photoUrl
+        const profileRes = await getProfile();
+        setProfile(profileRes.data.data);
         const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
         localStorage.setItem('user', JSON.stringify({
         ...currentUser,

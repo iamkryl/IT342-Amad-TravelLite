@@ -32,11 +32,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9d7f932a-844f-4696-bbc2-52426c30ca25" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/edu/cit/amad/travellite/admin/AdminController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/edu/cit/amad/travellite/admin/AdminController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/edu/cit/amad/travellite/trip/TripCompanionRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/edu/cit/amad/travellite/trip/TripCompanionRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/edu/cit/amad/travellite/trip/TripController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/edu/cit/amad/travellite/trip/TripController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../web/src/features/trip/TripDetail.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../web/src/features/trip/TripDetail.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../web/src/features/user/Profile.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../web/src/features/user/Profile.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -85,7 +84,7 @@
     "RunOnceActivity.readMode.enableVisualFormatting": "true",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
-    "git-widget-placeholder": "feature/admin-web",
+    "git-widget-placeholder": "feature/web-final",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/rel/Documents/IT342-Amad-TravelLite/mobile"
   }

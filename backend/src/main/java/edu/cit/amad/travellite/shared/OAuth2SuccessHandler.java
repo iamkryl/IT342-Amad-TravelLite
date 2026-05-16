@@ -44,6 +44,10 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         if (existingUser.isPresent()) {
             user = existingUser.get();
+            if (!user.getIsActive()) {
+                response.sendRedirect(frontendUrl + "/login?error=suspended");
+                return;
+            }
             if (user.getGoogleId() == null) {
                 user.setGoogleId(googleId);
             }
@@ -69,6 +73,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         response.sendRedirect(frontendUrl + "/oauth2/callback?token=" + token
                 + "&firstName=" + firstName
                 + "&lastName=" + (lastName != null ? lastName : "")
-                + "&email=" + email);
+                + "&email=" + email
+                + "&role=" + user.getRole());
     }
 }

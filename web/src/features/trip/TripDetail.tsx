@@ -252,11 +252,8 @@ export default function TripDetail() {
   }
 
   if (!trip) {
-    return (
-      <div className="min-h-screen bg-[#F0F2F5] flex items-center justify-center">
-        <p className="text-gray-400 text-sm">Trip not found.</p>
-      </div>
-    );
+    navigate('/dashboard');
+    return null;  
   }
 
   const isOwner = Number(user.id) === Number(trip.createdBy);

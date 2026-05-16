@@ -12,6 +12,7 @@ export default function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const urlError = new URLSearchParams(window.location.search).get('error');
   const token = localStorage.getItem('token');
   const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
   if (token) {
@@ -118,7 +119,7 @@ export default function Login() {
         </div>
 
         {/* Error Messages */}
-        {error === 'SUSPENDED' ? (
+        {(error === 'SUSPENDED' || urlError === 'suspended') ? (
           <div className="flex items-start gap-3 mb-5 px-4 py-3 rounded-xl"
             style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)' }}>
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
