@@ -118,6 +118,7 @@ export default function TripDetail() {
   const [loading, setLoading] = useState(true);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [checklist, setChecklist] = useState<ChecklistItem[]>([]);
 
@@ -252,11 +253,8 @@ export default function TripDetail() {
   }
 
   if (!trip) {
-    return (
-      <div className="min-h-screen bg-[#F0F2F5] flex items-center justify-center">
-        <p className="text-gray-400 text-sm">Trip not found.</p>
-      </div>
-    );
+    navigate('/dashboard');
+    return null;  
   }
 
   const isOwner = Number(user.id) === Number(trip.createdBy);
@@ -271,7 +269,7 @@ export default function TripDetail() {
       <div className="bg-[#1F2937] px-8 py-3 flex justify-between items-center shadow-lg sticky top-0 z-40">
         <div className="flex items-center gap-4">
           <button
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate(-1)}
             className="text-gray-400 hover:text-white transition-colors p-1.5 rounded-lg hover:bg-white hover:bg-opacity-10"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -290,7 +288,7 @@ export default function TripDetail() {
           <span className="text-gray-300 text-sm font-medium">{user.first_name} {user.last_name}</span>
           <div className="rounded-full w-9 h-9 overflow-hidden shadow-md ring-2 ring-green-400 ring-opacity-30 flex items-center justify-center bg-gradient-to-br from-[#10B981] to-[#059669]">
             {user.photo_url ? (
-              <img src={`http://localhost:8080${user.photo_url}`} alt="avatar" className="w-9 h-9 object-cover" />
+              <img src={user.photo_url} alt="avatar" className="w-9 h-9 object-cover" />
             ) : (
               <span className="text-white text-sm font-bold">{getUserInitials()}</span>
             )}
@@ -306,7 +304,7 @@ export default function TripDetail() {
             </svg>
           </button>
           <button
-            onClick={handleLogout}
+            onClick={() => setShowLogoutModal(true)}
             className="text-gray-400 hover:text-red-400 transition-all duration-200 p-1.5 rounded-lg hover:bg-red-400 hover:bg-opacity-10 hover:scale-110"
             title="Logout"
           >
@@ -365,7 +363,7 @@ export default function TripDetail() {
                   </svg>
                   {formatDateRange(trip.startDate, trip.endDate)}
                   <span className="text-gray-300">•</span>
-                  <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-md text-xs font-semibold">{trip.duration} days</span>
+                  <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-md text-xs font-semibold">{trip.duration} {trip.duration === 1 ? 'day' : 'days'}</span>
                 </div>
               </div>
 
@@ -431,15 +429,23 @@ export default function TripDetail() {
                 </div>
               </div>
             ) : (
+            <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <div className="bg-gray-100 rounded-2xl p-3">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+                <div className="bg-gradient-to-br from-[#374151] to-[#4B5563] rounded-2xl p-3 shadow-md">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
                   </svg>
                 </div>
-                <p className="text-gray-400 text-sm">Weather information unavailable</p>
+                <div>
+                  <p className="text-gray-700 font-semibold text-sm">Weather unavailable</p>
+                  <p className="text-gray-400 text-xs mt-0.5">Could not fetch weather for <span className="text-[#0BA6DF] font-medium">{trip.destination}</span></p>
+                </div>
               </div>
-            )}
+              <span className="text-xs text-gray-400 bg-gray-100 px-3 py-1.5 rounded-lg border border-gray-200 font-medium">
+                Try again later
+              </span>
+            </div>
+          )}
           </div>
         </div>
 
@@ -678,6 +684,27 @@ export default function TripDetail() {
                 className="flex-1 px-4 py-2.5 bg-[#EF4444] text-white rounded-xl text-sm font-bold hover:bg-red-600 transition-all duration-200 disabled:opacity-50 shadow-md shadow-red-100 hover:shadow-red-200 hover:-translate-y-0.5"
               >
                 {deleteLoading ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {showLogoutModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl border border-gray-100">
+            <div className="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-bold text-[#111827] mb-1 text-center">Log out?</h3>
+            <p className="text-gray-400 text-sm mb-6 text-center">Are you sure you want to log out of TravelLite?</p>
+            <div className="flex gap-3">
+              <button onClick={() => setShowLogoutModal(false)} className="flex-1 px-4 py-2.5 border-2 border-gray-200 rounded-xl text-sm text-gray-500 hover:bg-gray-50 hover:border-gray-300 transition-all font-medium">
+                Cancel
+              </button>
+              <button onClick={handleLogout} className="flex-1 px-4 py-2.5 bg-[#EF4444] text-white rounded-xl text-sm font-bold hover:bg-red-600 transition-all shadow-md shadow-red-100 hover:-translate-y-0.5">
+                Log out
               </button>
             </div>
           </div>
@@ -978,6 +1005,8 @@ function EditTripModal({
                     e.preventDefault();
                     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                     if (!emailRegex.test(companionEmail.trim())) { setError('Invalid email.'); return; }
+                    const currentUserEmail = JSON.parse(localStorage.getItem('user') || '{}').email;
+                    if (companionEmail.trim().toLowerCase() === currentUserEmail?.toLowerCase()) { setError('You cannot add yourself as a companion.'); return; }
                     if (companions.includes(companionEmail.trim())) { setError('Already added.'); return; }
                     setCompanions([...companions, companionEmail.trim()]);
                     setCompanionEmail('');
