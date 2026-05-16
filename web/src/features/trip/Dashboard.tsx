@@ -40,12 +40,17 @@ export default function Dashboard() {
   const [companionTrips, setCompanionTrips] = useState<Trip[]>([]);
 
   useEffect(() => {
+  const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+  if (storedUser.role === 'ADMIN') {
+    navigate('/admin');
+    return;
+  }
   fetchDashboard();
   fetchTrips();
   fetchProfile();
   fetchCompanionTrips();
 }, []);
-  
+
   const fetchProfile = async () => {
   try {
     const res = await axios.get('http://localhost:8080/api/v1/users/me', {
