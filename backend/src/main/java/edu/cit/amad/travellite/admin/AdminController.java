@@ -51,7 +51,7 @@ public class AdminController {
         response.put("timestamp", LocalDateTime.now().toString());
         return ResponseEntity.ok(response);
     }
-    
+
     @PatchMapping("/users/{userId}/reactivate")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> reactivateUser(@PathVariable Long userId) {

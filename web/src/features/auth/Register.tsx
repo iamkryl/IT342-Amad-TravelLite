@@ -50,7 +50,12 @@ export default function Register() {
       const res = await registerUser({ firstName, lastName, email, password });
       if (res.data.success) {
         localStorage.setItem('token', res.data.data.accessToken);
-        localStorage.setItem('user', JSON.stringify(res.data.data.user));
+        const u = res.data.data.user;
+        localStorage.setItem('user', JSON.stringify({
+          ...u,
+          first_name: u.firstName,
+          last_name: u.lastName,
+        }));
         navigate('/dashboard');
       } else {
         setError(res.data.error?.message || 'Registration failed');
