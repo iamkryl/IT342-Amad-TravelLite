@@ -205,7 +205,7 @@ export default function UserManagement() {
                         {u.isActive ? (
                           <button
                           onClick={() => setConfirmModal({ show: true, type: 'suspend', userId: u.userId, userName: `${u.firstName} ${u.lastName}` })}
-                          disabled={u.userId === JSON.parse(localStorage.getItem('user') || '{}').id}
+                          disabled={u.email === JSON.parse(localStorage.getItem('user') || '{}').email}
                           className="px-3 py-1.5 rounded-lg text-xs font-bold border transition-all duration-200 hover:-translate-y-0.5 disabled:opacity-30 disabled:cursor-not-allowed"
                           style={{ borderColor: '#FAA533', color: '#FAA533', background: 'transparent' }}
                           onMouseEnter={e => { e.currentTarget.style.background = '#FAA533'; e.currentTarget.style.color = 'white'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(250,165,51,0.35)'; }}
@@ -226,7 +226,7 @@ export default function UserManagement() {
                         )}
                         <button
                           onClick={() => setConfirmModal({ show: true, type: 'delete', userId: u.userId, userName: `${u.firstName} ${u.lastName}` })}
-                          disabled={u.userId === JSON.parse(localStorage.getItem('user') || '{}').id}
+                          disabled={u.email === JSON.parse(localStorage.getItem('user') || '{}').email}
                           className="px-3 py-1.5 rounded-lg text-xs font-bold border transition-all duration-200 hover:-translate-y-0.5"
                           style={{ borderColor: '#EF4444', color: '#EF4444', background: 'transparent' }}
                           onMouseEnter={e => { e.currentTarget.style.background = '#EF4444'; e.currentTarget.style.color = 'white'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(239,68,68,0.35)'; }}
