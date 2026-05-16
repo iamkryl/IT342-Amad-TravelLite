@@ -14,15 +14,20 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const [user, setUser] = useState(JSON.parse(localStorage.getItem('user') || '{}'));
 
   useEffect(() => {
-    fetchProfile();
-    const sync = () => setUser(JSON.parse(localStorage.getItem('user') || '{}'));
-    window.addEventListener('userUpdated', sync);
-    window.addEventListener('storage', sync);
-    return () => {
-      window.removeEventListener('userUpdated', sync);
-      window.removeEventListener('storage', sync);
-    };
-  }, []);
+  const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+  if (storedUser.role !== 'ADMIN') {
+    navigate('/dashboard');
+    return;
+  }
+  fetchProfile();
+  const sync = () => setUser(JSON.parse(localStorage.getItem('user') || '{}'));
+  window.addEventListener('userUpdated', sync);
+  window.addEventListener('storage', sync);
+  return () => {
+    window.removeEventListener('userUpdated', sync);
+    window.removeEventListener('storage', sync);
+  };
+}, []);
 
   const fetchProfile = async () => {
     try {

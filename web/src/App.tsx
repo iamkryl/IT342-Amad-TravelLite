@@ -18,8 +18,9 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
 
 function AdminRoute({ children }: { children: React.ReactNode }) {
   const token = localStorage.getItem('token');
-  const user = localStorage.getItem('user');
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
   if (!token) return <Navigate to="/login" />;
+  if (user.role !== 'ADMIN') return <Navigate to="/dashboard" />;
   return <>{children}</>;
 }
 

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { loginUser } from '../../api';
+import logo from '../../assets/travellite.png';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -55,28 +56,71 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <div className="bg-[#1F2937] rounded-2xl p-8 w-full max-w-sm shadow-xl">
-        <div className="flex flex-col items-center mb-6">
-          <div className="bg-[#EF7722] rounded-full p-3 mb-2">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 004 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064" />
-            </svg>
-          </div>
-          <h1 className="text-white text-xl font-bold">TravelLite</h1>
-          <p className="text-gray-400 text-sm">Your complete trip planning companion</p>
+    <div
+      className="min-h-screen flex items-center justify-center p-4"
+      style={{
+        background: 'linear-gradient(135deg, #0f1923 0%, #1a2535 50%, #0f1923 100%)',
+      }}
+    >
+      {/* Decorative background blobs */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div style={{
+          position: 'absolute', top: '-10%', right: '-5%',
+          width: '500px', height: '500px', borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(239,119,34,0.08) 0%, transparent 70%)',
+        }} />
+        <div style={{
+          position: 'absolute', bottom: '-10%', left: '-5%',
+          width: '400px', height: '400px', borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(11,166,223,0.08) 0%, transparent 70%)',
+        }} />
+      </div>
+
+      <div
+        className="relative w-full max-w-md"
+        style={{
+          background: 'rgba(26,35,50,0.9)',
+          border: '1px solid rgba(255,255,255,0.08)',
+          borderRadius: '24px',
+          boxShadow: '0 32px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04) inset',
+          backdropFilter: 'blur(20px)',
+          padding: '40px',
+        }}
+      >
+        {/* Top accent line */}
+        <div style={{
+          position: 'absolute', top: 0, left: '10%', right: '10%', height: '2px',
+          background: 'linear-gradient(90deg, transparent, #EF7722, #0BA6DF, transparent)',
+          borderRadius: '0 0 2px 2px',
+        }} />
+
+        {/* Logo */}
+        <div className="flex flex-col items-center mb-8">
+          <img src={logo} alt="TravelLite" style={{ height: '56px', width: '56px', objectFit: 'contain', marginBottom: '12px' }} />
+          <h1 className="text-white font-bold text-2xl tracking-tight">TravelLite</h1>
+          <p style={{ color: '#6b7280', fontSize: '13px', marginTop: '2px' }}>Your complete trip planning companion</p>
         </div>
 
-        <h2 className="text-white text-2xl font-bold text-center mb-1">Welcome back</h2>
-        <p className="text-gray-400 text-sm text-center mb-6">
-          Don't have an account?{' '}
-          <span onClick={() => navigate('/register')} className="text-[#EF7722] cursor-pointer hover:underline">Sign up</span>
-        </p>
+        {/* Heading */}
+        <div className="mb-6">
+          <h2 className="text-white font-bold text-2xl mb-1">Welcome back</h2>
+          <p style={{ color: '#6b7280', fontSize: '14px' }}>
+            Don't have an account?{' '}
+            <span
+              onClick={() => navigate('/register')}
+              style={{ color: '#EF7722', cursor: 'pointer', fontWeight: 600 }}
+              onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
+              onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
+            >
+              Sign up
+            </span>
+          </p>
+        </div>
 
         {/* Error Messages */}
         {error === 'SUSPENDED' ? (
-          <div className="flex items-start gap-3 px-4 py-3 rounded-xl mb-5"
-            style={{ background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)' }}>
+          <div className="flex items-start gap-3 mb-5 px-4 py-3 rounded-xl"
+            style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)' }}>
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
             </svg>
@@ -86,33 +130,52 @@ export default function Login() {
             </div>
           </div>
         ) : error ? (
-          <p className="text-red-400 text-sm text-center mb-4">{error}</p>
+          <div className="flex items-center gap-2 mb-5 px-4 py-3 rounded-xl"
+            style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)' }}>
+            <svg className="w-4 h-4 text-red-400 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            <p className="text-red-400 text-sm">{error}</p>
+          </div>
         ) : null}
 
         <form onSubmit={handleLogin} className="space-y-4">
+          {/* Email */}
           <div>
-            <label className="text-gray-400 text-sm mb-1 block">Email Address</label>
+            <label style={{ color: '#9ca3af', fontSize: '12px', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+              Email Address
+            </label>
             <div className="relative">
-              <span className="absolute left-3 top-3.5 text-gray-400">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: '#4b5563' }}>
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
               </span>
               <input
                 type="email"
-                placeholder="Email Address"
+                placeholder="you@example.com"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 required
-                className="w-full bg-[#374151] text-white rounded-lg pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#EF7722]"
+                style={{
+                  width: '100%', background: 'rgba(255,255,255,0.04)',
+                  border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px',
+                  paddingLeft: '40px', paddingRight: '16px', paddingTop: '12px', paddingBottom: '12px',
+                  color: '#e5e7eb', fontSize: '14px', outline: 'none', transition: 'border-color 0.2s',
+                }}
+                onFocus={e => (e.currentTarget.style.borderColor = '#EF7722')}
+                onBlur={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)')}
               />
             </div>
           </div>
 
+          {/* Password */}
           <div>
-            <label className="text-gray-400 text-sm mb-1 block">Password</label>
+            <label style={{ color: '#9ca3af', fontSize: '12px', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+              Password
+            </label>
             <div className="relative">
-              <span className="absolute left-3 top-3.5 text-gray-400">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: '#4b5563' }}>
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
@@ -123,9 +186,22 @@ export default function Login() {
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 required
-                className="w-full bg-[#374151] text-white rounded-lg pl-10 pr-10 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#EF7722]"
+                style={{
+                  width: '100%', background: 'rgba(255,255,255,0.04)',
+                  border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px',
+                  paddingLeft: '40px', paddingRight: '44px', paddingTop: '12px', paddingBottom: '12px',
+                  color: '#e5e7eb', fontSize: '14px', outline: 'none', transition: 'border-color 0.2s',
+                }}
+                onFocus={e => (e.currentTarget.style.borderColor = '#EF7722')}
+                onBlur={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)')}
               />
-              <span onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-3.5 text-gray-400 cursor-pointer">
+              <span
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
+                style={{ color: '#4b5563' }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#9ca3af')}
+                onMouseLeave={e => (e.currentTarget.style.color = '#4b5563')}
+              >
                 {showPassword ? (
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
@@ -140,39 +216,84 @@ export default function Login() {
             </div>
           </div>
 
+          {/* Remember me + Forgot */}
           <div className="flex items-center justify-between">
-            <label className="flex items-center gap-2 text-gray-400 text-sm cursor-pointer">
-              <input type="checkbox" checked={rememberMe} onChange={e => setRememberMe(e.target.checked)} className="w-4 h-4" />
-              Remember me
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={e => setRememberMe(e.target.checked)}
+                style={{ width: '15px', height: '15px', accentColor: '#EF7722' }}
+              />
+              <span style={{ color: '#9ca3af', fontSize: '13px' }}>Remember me</span>
             </label>
-            <span className="text-[#EF7722] text-sm cursor-pointer hover:underline">Forgot Password?</span>
+            <span style={{ color: '#EF7722', fontSize: '13px', cursor: 'pointer', fontWeight: 500 }}
+              onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
+              onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
+            >
+              Forgot Password?
+            </span>
           </div>
 
+          {/* Sign in button */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#EF7722] text-white font-semibold py-3 rounded-lg hover:bg-orange-600 transition disabled:opacity-50"
+            style={{
+              width: '100%',
+              background: loading ? '#c96318' : 'linear-gradient(135deg, #EF7722 0%, #f59340 100%)',
+              color: 'white', fontWeight: 700, fontSize: '15px',
+              padding: '13px', borderRadius: '10px', border: 'none',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              boxShadow: loading ? 'none' : '0 8px 24px rgba(239,119,34,0.3)',
+              transition: 'all 0.2s', opacity: loading ? 0.7 : 1,
+            }}
+            onMouseEnter={e => { if (!loading) { e.currentTarget.style.background = 'linear-gradient(135deg, #e06b18 0%, #EF7722 100%)'; e.currentTarget.style.transform = 'translateY(-1px)'; } }}
+            onMouseLeave={e => { if (!loading) { e.currentTarget.style.background = 'linear-gradient(135deg, #EF7722 0%, #f59340 100%)'; e.currentTarget.style.transform = 'translateY(0)'; } }}
           >
-            {loading ? 'Signing in...' : 'Sign in'}
+            {loading ? (
+              <span className="flex items-center justify-center gap-2">
+                <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="white" strokeWidth="4" />
+                  <path className="opacity-75" fill="white" d="M4 12a8 8 0 018-8v8z" />
+                </svg>
+                Signing in...
+              </span>
+            ) : 'Sign in'}
           </button>
         </form>
 
-        <div className="flex items-center my-4">
-          <hr className="flex-grow border-gray-600" />
-          <span className="text-gray-400 text-sm mx-2">or</span>
-          <hr className="flex-grow border-gray-600" />
+        {/* Divider */}
+        <div className="flex items-center my-5">
+          <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.08)' }} />
+          <span style={{ color: '#4b5563', fontSize: '12px', margin: '0 12px', fontWeight: 500 }}>or continue with</span>
+          <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.08)' }} />
         </div>
 
+        {/* Google button */}
         <button
           onClick={() => window.location.href = 'http://localhost:8080/oauth2/authorization/google'}
-          className="w-full bg-[#374151] text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2 hover:bg-gray-600 transition"
+          style={{
+            width: '100%', background: 'rgba(255,255,255,0.05)',
+            border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px',
+            color: '#e5e7eb', fontWeight: 600, fontSize: '14px',
+            padding: '12px', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
+            transition: 'all 0.2s',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.09)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; e.currentTarget.style.transform = 'translateY(0)'; }}
         >
-          <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" className="w-5 h-5" />
+          <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" style={{ width: '18px', height: '18px' }} />
           Continue with Google
         </button>
 
-        <p className="text-gray-500 text-xs text-center mt-4">
-          By signing in, you agree to our <span className="underline cursor-pointer">Terms of Service</span> and <span className="underline cursor-pointer">Privacy Policy</span>
+        {/* Footer */}
+        <p style={{ color: '#4b5563', fontSize: '12px', textAlign: 'center', marginTop: '20px' }}>
+          By signing in, you agree to our{' '}
+          <span style={{ color: '#6b7280', textDecoration: 'underline', cursor: 'pointer' }}>Terms of Service</span>
+          {' '}and{' '}
+          <span style={{ color: '#6b7280', textDecoration: 'underline', cursor: 'pointer' }}>Privacy Policy</span>
         </p>
       </div>
     </div>
