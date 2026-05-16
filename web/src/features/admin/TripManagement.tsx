@@ -23,6 +23,7 @@ export default function TripManagement() {
     tripId: number;
     tripTitle: string;
   }>({ show: false, tripId: 0, tripTitle: '' });
+  const [viewModal, setViewModal] = useState<AdminTrip | null>(null);
 
   useEffect(() => { fetchTrips(); }, []);
 
@@ -205,7 +206,7 @@ export default function TripManagement() {
                     <td className="px-6 py-4">
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => navigate(`/trips/${trip.tripId}`)}
+                      onClick={() => setViewModal(trip)}
                       className="px-3 py-1.5 rounded-lg text-xs font-bold border transition-all duration-200 hover:-translate-y-0.5"
                       style={{ borderColor: '#0BA6DF', color: '#0BA6DF', background: 'transparent' }}
                       onMouseEnter={e => { e.currentTarget.style.background = '#0BA6DF'; e.currentTarget.style.color = 'white'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(11,166,223,0.35)'; }}
@@ -263,7 +264,70 @@ export default function TripManagement() {
           )}
         </div>
       </div>
+      {viewModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+          <div
+            className="bg-white rounded-2xl w-full max-w-md shadow-2xl border border-gray-100 overflow-hidden transition-all duration-300"
+            style={{ boxShadow: '0 25px 60px rgba(0,0,0,0.2)' }}
+          >
+            <div className="h-1.5 w-full" style={{ background: 'linear-gradient(90deg, #EF7722 0%, #f59340 50%, #0BA6DF 100%)' }} />
+            <div className="p-6">
+              <div className="flex justify-between items-start mb-5">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center" style={{ boxShadow: '0 4px 12px rgba(239,119,34,0.35)' }}>
+                    <img src={require('../../assets/travellite.png')} alt="TravelLite" className="w-10 h-10 object-contain" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wide mb-0.5">Trip Details</p>
+                    <h3 className="text-lg font-black text-[#111827] leading-tight">{viewModal.title}</h3>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setViewModal(null)}
+                  className="text-gray-300 hover:text-gray-600 transition-colors p-1.5 rounded-lg hover:bg-gray-100"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
 
+              <div className="space-y-1">
+                {[
+                  { label: 'Trip ID', value: `#${viewModal.tripId}`, color: 'text-gray-700 font-bold' },
+                  { label: 'Destination', value: viewModal.destination, color: 'text-[#0BA6DF] font-bold' },
+                  { label: 'From', value: viewModal.origin, color: 'text-gray-600' },
+                  { label: 'Start Date', value: viewModal.startDate, color: 'text-gray-600' },
+                  { label: 'End Date', value: viewModal.endDate, color: 'text-gray-600' },
+                  { label: 'Duration', value: `${Math.ceil((new Date(viewModal.endDate).getTime() - new Date(viewModal.startDate).getTime()) / (1000 * 60 * 60 * 24))} ${Math.ceil((new Date(viewModal.endDate).getTime() - new Date(viewModal.startDate).getTime()) / (1000 * 60 * 60 * 24)) === 1 ? 'day' : 'days'}`, color: 'text-[#EF7722] font-bold' },
+                  { label: 'Created By', value: viewModal.createdBy, color: 'text-gray-600' },
+                ].map((row, i) => (
+                  <div
+                    key={i}
+                    className="flex justify-between items-center px-4 py-3 rounded-xl transition-all duration-200 cursor-default"
+                    style={{ background: i % 2 === 0 ? 'rgba(249,250,251,0.8)' : 'white' }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(239,119,34,0.04)'; (e.currentTarget as HTMLDivElement).style.transform = 'translateX(4px)'; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = i % 2 === 0 ? 'rgba(249,250,251,0.8)' : 'white'; (e.currentTarget as HTMLDivElement).style.transform = 'translateX(0)'; }}
+                  >
+                    <span className="text-xs font-bold text-gray-400 uppercase tracking-wide">{row.label}</span>
+                    <span className={`text-sm ${row.color}`}>{row.value}</span>
+                  </div>
+                ))}
+              </div>
+
+              <button
+                onClick={() => setViewModal(null)}
+                className="mt-5 w-full py-3 rounded-xl text-sm font-bold text-white transition-all duration-200 hover:-translate-y-0.5"
+                style={{ background: 'linear-gradient(90deg, #EF7722 0%, #f59340 100%)', boxShadow: '0 4px 12px rgba(239,119,34,0.35)' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 8px 20px rgba(239,119,34,0.5)'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 4px 12px rgba(239,119,34,0.35)'; }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* ── Confirm Delete Modal ── */}
       {confirmModal.show && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
