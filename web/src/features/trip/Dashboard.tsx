@@ -627,6 +627,11 @@ function PlanTripModal({
         setError('Please enter a valid companion email address.');
         return;
       }
+      const currentUserEmail = JSON.parse(localStorage.getItem('user') || '{}').email;
+      if (companionEmail.trim().toLowerCase() === currentUserEmail?.toLowerCase()) {
+        setError('You cannot add yourself as a companion.');
+        return;
+      }
       if (companions.includes(companionEmail.trim())) {
         setError('This email has already been added.');
         return;
