@@ -983,6 +983,8 @@ function EditTripModal({
                     e.preventDefault();
                     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                     if (!emailRegex.test(companionEmail.trim())) { setError('Invalid email.'); return; }
+                    const currentUserEmail = JSON.parse(localStorage.getItem('user') || '{}').email;
+                    if (companionEmail.trim().toLowerCase() === currentUserEmail?.toLowerCase()) { setError('You cannot add yourself as a companion.'); return; }
                     if (companions.includes(companionEmail.trim())) { setError('Already added.'); return; }
                     setCompanions([...companions, companionEmail.trim()]);
                     setCompanionEmail('');
