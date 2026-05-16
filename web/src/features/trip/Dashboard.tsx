@@ -199,7 +199,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
 
           {/* Total Trips */}
-          <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/60 border border-gray-100/80 overflow-hidden hover:shadow-2xl hover:shadow-gray-200/80 transition-shadow duration-300">
+          <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/60 border border-gray-100/80 overflow-hidden hover:shadow-2xl hover:shadow-gray-200/80 hover:-translate-y-1 transition-all duration-300">
             <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, #1F2937 0%, #374151 100%)' }} />
             <div className="p-6 flex justify-between items-center">
               <div>
@@ -216,7 +216,7 @@ export default function Dashboard() {
           </div>
 
           {/* Overall Expense */}
-          <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/60 border border-gray-100/80 overflow-hidden hover:shadow-2xl hover:shadow-gray-200/80 transition-shadow duration-300">
+          <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/60 border border-gray-100/80 overflow-hidden hover:shadow-2xl hover:shadow-gray-200/80 hover:-translate-y-1 transition-all duration-300">
             <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, #0BA6DF 0%, #0891c2 100%)' }} />
             <div className="p-6 flex justify-between items-center">
               <div>
@@ -235,7 +235,7 @@ export default function Dashboard() {
           {/* Upcoming Travels */}
           <div
             onClick={() => { setShowUpcomingModal(true); fetchUpcomingTrips(); }}
-            className="rounded-2xl shadow-xl shadow-blue-100/60 border border-blue-100/80 overflow-hidden hover:shadow-2xl hover:shadow-blue-200/80 transition-all duration-300 cursor-pointer"
+            className="rounded-2xl shadow-xl shadow-blue-100/60 border border-blue-100/80 overflow-hidden hover:shadow-2xl hover:shadow-blue-200/80 hover:-translate-y-1 transition-all duration-300 cursor-pointer"
             style={{ background: 'linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%)' }}
           >
             <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, #0BA6DF 0%, #0891c2 100%)' }} />
@@ -334,7 +334,7 @@ export default function Dashboard() {
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        {trip.duration} days
+                        {trip.duration} {trip.duration === 1 ? 'day' : 'days'}
                       </span>
                     </td>
                   </tr>
@@ -345,7 +345,7 @@ export default function Dashboard() {
         </div>
 
         {/* Companion Trips */}
-        {companionTrips.length > 0 && (
+        {(
           <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/60 border border-gray-100/80 overflow-hidden mt-5">
             <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, #0BA6DF 0%, #0891c2 60%, #EF7722 100%)' }} />
             <div className="px-6 py-5 flex items-center gap-3" style={{ borderBottom: '1px solid #f3f4f6' }}>
@@ -359,7 +359,18 @@ export default function Dashboard() {
                 {companionTrips.length} trips
               </span>
             </div>
-            <table className="w-full text-sm">
+            {companionTrips.length === 0 ? (
+            <div className="p-12 text-center">
+              <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ background: 'rgba(11,166,223,0.08)' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-blue-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </div>
+              <p className="text-gray-700 font-semibold mb-1">No invitations yet</p>
+              <p className="text-gray-400 text-sm">You haven't been added to any trips yet.</p>
+            </div>
+          ) : (
+          <table className="w-full text-sm">
               <thead>
                 <tr style={{ background: 'linear-gradient(90deg, #1F2937 0%, #374151 100%)' }}>
                   <th className="px-6 py-4 text-left font-bold text-xs uppercase tracking-widest text-gray-300">Date</th>
@@ -411,6 +422,7 @@ export default function Dashboard() {
                 ))}
               </tbody>
             </table>
+          )}
           </div>
         )}
 
